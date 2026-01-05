@@ -1,7 +1,7 @@
 import "./App.css";
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
-import channels from "../data/channels.json";
+import channels from "./data/channels.json";
 
 function App() {
   const videoRef = useRef(null);

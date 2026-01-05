@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import https from "https";
 
-const RAW_DIR = "data/raw";
+const CHANNELS_OUTPUT = "src/data/channels.json";
 
 const SOURCES = {
   IPTV_ORG_IN:
