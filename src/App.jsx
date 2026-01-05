@@ -23,17 +23,20 @@ function App() {
         <div className="ad-box">Ad Slot 2</div>
       </aside>
 
-      <main className="player-area">
-        <h1>Click-India-Watch</h1>
+<main className="player-area">
+  <div className="player-inner">
+    <h1>Click-India-Watch</h1>
 
-        <div className="player-wrapper">
-          <video controls />
-        </div>
+    <div className="player-wrapper">
+      <video controls />
+    </div>
 
-        <div className="status">
-          Status: Waiting for channel selection
-        </div>
-      </main>
+    <div className="status">
+      Status: Waiting for channel selection
+    </div>
+  </div>
+</main>
+
     </div>
   );
 }
