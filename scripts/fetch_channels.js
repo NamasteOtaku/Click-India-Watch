@@ -1,11 +1,12 @@
 import fs from "fs";
-import https from "https";
+import path from "path";
 
-const OUTPUT = "data/channels.json";
+const DATA_DIR = "data";
+const OUTPUT = path.join(DATA_DIR, "channels.json");
 
 /**
  * SAFE SAMPLE SOURCE (HTTPS)
- * We will expand later.
+ * Will expand later
  */
 const SOURCES = [
   {
@@ -20,7 +21,15 @@ const SOURCES = [
   }
 ];
 
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
 function main() {
+  ensureDir(DATA_DIR);
+
   const channels = SOURCES.map((c, i) => ({
     id: i + 1,
     name: c.name,
