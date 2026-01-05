@@ -11,6 +11,7 @@ function App() {
     "Waiting for channel selection"
   );
   const [activeChannel, setActiveChannel] = useState(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     return () => {
@@ -79,6 +80,11 @@ function App() {
     setStatus("Stream URL copied. Open VLC → Media → Open Network Stream.");
   }
 
+  const filterChannels =
+  channels.filter((ch) =>
+  ch.name.toLowerCase().includes(query.toLowerCase())
+);
+
   return (
     <div className="app">
       {/* SIDEBAR */}
@@ -88,20 +94,32 @@ function App() {
         <input
           className="search"
           placeholder="Search channels..."
-          disabled
+          value={query}
+          onChange={(e) =>
+            setQuery(e.target.value)}
         />
 
-        <div className="channel-list">
-          {channels.map((ch) => (
-            <div
-              key={ch.id}
-              className="channel"
-              onClick={() => playChannel(ch)}
-            >
-              {ch.name}
-            </div>
-          ))}
-        </div>
+<div className="channel-list">
+  {filteredChannels.map((ch) => (
+    <div
+      key={ch.id}
+      className={`channel ${
+        activeChannel?.id === ch.id ? "active" : ""
+      }`}
+      onClick={() => playChannel(ch)}
+    >
+      <span>{ch.name}</span>
+
+      <span
+        className={`badge ${
+          ch.protocol === "https" ? "ok" : "warn"
+        }`}
+      >
+        {ch.protocol === "https" ? "LIVE" : "VLC"}
+      </span>
+    </div>
+  ))}
+</div>
 
         <div className="ad-box">Ad Slot 1</div>
         <div className="ad-box">Ad Slot 2</div>

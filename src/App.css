@@ -115,3 +115,35 @@ html, body {
   font-size: 14px;
   color: #aaa;
 }
+
+.channel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #2a2a2a;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.channel.active {
+  background: #3a3a3a;
+  outline: 1px solid #555;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.badge.ok {
+  background: #1e7f43;
+  color: #caffd8;
+}
+
+.badge.warn {
+  background: #7f4e1e;
+  color: #ffe3c4;
+}
