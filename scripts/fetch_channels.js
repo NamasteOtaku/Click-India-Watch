@@ -5,8 +5,8 @@ const DATA_DIR = "data";
 const OUTPUT = path.join(DATA_DIR, "channels.json");
 
 /**
- * SAFE SAMPLE SOURCE (HTTPS)
- * Will expand later
+ * SAFE INITIAL SOURCES
+ * Expand later
  */
 const SOURCES = [
   {

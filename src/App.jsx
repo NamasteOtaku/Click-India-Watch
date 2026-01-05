@@ -7,9 +7,7 @@ function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
 
-  const [status, setStatus] = useState(
-    "Waiting for channel selection"
-  );
+  const [status, setStatus] = useState("Waiting for channel selection");
   const [activeChannel, setActiveChannel] = useState(null);
   const [query, setQuery] = useState("");
 
@@ -24,7 +22,6 @@ function App() {
   function playChannel(channel) {
     setActiveChannel(channel);
 
-    // Cleanup previous instance
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
@@ -35,17 +32,13 @@ function App() {
     video.removeAttribute("src");
     video.load();
 
-    // HTTP streams → VLC only
     if (channel.protocol === "http") {
-      setStatus(
-        "This channel is HTTP-only. Copy the URL and play it in VLC."
-      );
+      setStatus("HTTP stream. Copy URL and play in VLC.");
       return;
     }
 
     setStatus(`Loading ${channel.name}...`);
 
-    // Native HLS support (Safari)
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = channel.url;
       video.play();
@@ -53,7 +46,6 @@ function App() {
       return;
     }
 
-    // HLS.js
     if (Hls.isSupported()) {
       const hls = new Hls();
       hlsRef.current = hls;
@@ -80,14 +72,12 @@ function App() {
     setStatus("Stream URL copied. Open VLC → Media → Open Network Stream.");
   }
 
-  const filterChannels =
-  channels.filter((ch) =>
-  ch.name.toLowerCase().includes(query.toLowerCase())
-);
+  const filteredChannels = channels.filter((ch) =>
+    ch.name.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div className="app">
-      {/* SIDEBAR */}
       <aside className="sidebar">
         <h2>Channels</h2>
 
@@ -95,37 +85,34 @@ function App() {
           className="search"
           placeholder="Search channels..."
           value={query}
-          onChange={(e) =>
-            setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
         />
 
-<div className="channel-list">
-  {filteredChannels.map((ch) => (
-    <div
-      key={ch.id}
-      className={`channel ${
-        activeChannel?.id === ch.id ? "active" : ""
-      }`}
-      onClick={() => playChannel(ch)}
-    >
-      <span>{ch.name}</span>
-
-      <span
-        className={`badge ${
-          ch.protocol === "https" ? "ok" : "warn"
-        }`}
-      >
-        {ch.protocol === "https" ? "LIVE" : "VLC"}
-      </span>
-    </div>
-  ))}
-</div>
+        <div className="channel-list">
+          {filteredChannels.map((ch) => (
+            <div
+              key={ch.id}
+              className={`channel ${
+                activeChannel?.id === ch.id ? "active" : ""
+              }`}
+              onClick={() => playChannel(ch)}
+            >
+              <span>{ch.name}</span>
+              <span
+                className={`badge ${
+                  ch.protocol === "https" ? "ok" : "warn"
+                }`}
+              >
+                {ch.protocol === "https" ? "LIVE" : "VLC"}
+              </span>
+            </div>
+          ))}
+        </div>
 
         <div className="ad-box">Ad Slot 1</div>
         <div className="ad-box">Ad Slot 2</div>
       </aside>
 
-      {/* PLAYER */}
       <main className="player-area">
         <div className="player-inner">
           <h1>Click-India-Watch</h1>
@@ -136,7 +123,7 @@ function App() {
 
           <div className="status">{status}</div>
 
-          {activeChannel && activeChannel.protocol === "http" && (
+          {activeChannel?.protocol === "http" && (
             <button onClick={copyUrl} style={{ marginTop: "10px" }}>
               Copy Stream URL (VLC)
             </button>
