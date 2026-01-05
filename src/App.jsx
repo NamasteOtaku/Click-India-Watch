@@ -1,4 +1,5 @@
 import "./App.css";
+import channels from "../data/channels.json";
 
 function App() {
   return (
@@ -14,9 +15,13 @@ function App() {
         />
 
         {/* Channel list placeholder */}
-        <div className="channel-list">
-          <div className="channel">Loading…</div>
-        </div>
+<div className="channel-list">
+  {channels.map(ch => (
+    <div key={ch.id} className="channel">
+      {ch.name}
+    </div>
+  ))}
+</div>
 
         {/* Adsterra placeholders */}
         <div className="ad-box">Ad Slot 1</div>
