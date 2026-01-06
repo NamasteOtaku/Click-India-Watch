@@ -15,28 +15,20 @@ const IPTV_ORG_IN =
 const LIVETV_COLLECTOR_IN =
   "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/main/LiveTV/India/LiveTV";
 
-/* ================= FILTERS ================= */
-
-// Expand carefully – not everything
-const ALLOWED_KEYWORDS = [
-  "aaj",
-  "abp",
-  "india",
-  "republic",
-  "news",
-  "zee",
-  "ndtv",
-  "sony",
-  "star",
-  "colors",
-  "sahara",
-  "dd "
-];
-
 /* ================= HELPERS ================= */
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
+function inferCategory(name = "") {
+  const n = name.toLowerCase();
+  if (n.includes("news")) return "News";
+  if (n.includes("sport")) return "Sports";
+  if (n.includes("movie") || n.includes("cinema")) return "Movies";
+  if (n.includes("kids") || n.includes("cartoon")) return "Kids";
+  if (n.includes("music")) return "Music";
+  return "Entertainment";
 }
 
 function parseM3U(content) {
@@ -70,42 +62,33 @@ function parseLiveTVCollector(jsonText) {
   if (!Array.isArray(data)) return [];
 
   return data
-    .filter((ch) => ch.name && ch.url)
-    .map((ch) => ({
+    .filter(ch => ch.name && ch.url)
+    .map(ch => ({
       name: ch.name.trim(),
       url: ch.url.trim(),
       source: "LiveTVCollector"
     }));
 }
 
-/* ================= NORMALIZE ================= */
+async function checkHealth(url) {
+  if (!url.startsWith("https")) return "vlc";
 
-function normalize(list) {
-  const seen = new Set();
-  const out = [];
-
-  for (const ch of list) {
-    const key = ch.url;
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-
-    out.push({
-      id: out.length + 1,
-      name: ch.name,
-      url: ch.url,
-      category: "General",
-      protocol: ch.url.startsWith("https") ? "https" : "http",
-      source: ch.source,
-      status: "unknown"
+  try {
+    const res = await fetch(url, {
+      method: "HEAD",
+      redirect: "follow",
+      timeout: 5000
     });
+    return res.ok ? "live" : "dead";
+  } catch {
+    return "dead";
   }
-  return out;
 }
 
 /* ================= MAIN ================= */
 
 async function main() {
-  console.log("▶ Fetching IPTV sources (expanded)…");
+  console.log("▶ Fetching & checking IPTV sources…");
 
   ensureDir(OUTPUT_DIR);
 
@@ -117,19 +100,30 @@ async function main() {
   const iptvRaw = await iptvRes.text();
   const collectorRaw = await collectorRes.text();
 
-  const iptvChannels = parseM3U(iptvRaw);
-  const collectorChannels = parseLiveTVCollector(collectorRaw);
+  const merged = [
+    ...parseM3U(iptvRaw),
+    ...parseLiveTVCollector(collectorRaw)
+  ];
 
-  const merged = [...iptvChannels, ...collectorChannels];
+  const seen = new Set();
+  const finalChannels = [];
 
-  // Controlled expansion
-  const filtered = merged.filter((ch) =>
-    ALLOWED_KEYWORDS.some((k) =>
-      ch.name.toLowerCase().includes(k)
-    )
-  );
+  for (const ch of merged) {
+    if (!ch.url || seen.has(ch.url)) continue;
+    seen.add(ch.url);
 
-  const finalChannels = normalize(filtered);
+    const status = await checkHealth(ch.url);
+
+    finalChannels.push({
+      id: finalChannels.length + 1,
+      name: ch.name,
+      url: ch.url,
+      category: inferCategory(ch.name),
+      protocol: ch.url.startsWith("https") ? "https" : "http",
+      source: ch.source,
+      status
+    });
+  }
 
   fs.writeFileSync(
     OUTPUT_FILE,
@@ -137,12 +131,10 @@ async function main() {
     "utf-8"
   );
 
-  console.log(
-    `✔ channels.json generated (${finalChannels.length} channels)`
-  );
+  console.log(`✔ channels.json generated (${finalChannels.length} channels)`);
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("✖ Build failed:", err.message);
   process.exit(1);
 });

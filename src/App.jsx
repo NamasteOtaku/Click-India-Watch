@@ -8,16 +8,30 @@ export default function App() {
   const hlsRef = useRef(null);
 
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
+  const [sort, setSort] = useState("all"); // all | live | vlc
   const [current, setCurrent] = useState(null);
 
-  const filteredChannels = channels.filter((ch) =>
-    ch.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const categories = ["All", ...new Set(channels.map(c => c.category))];
+
+  const filteredChannels = channels
+    .filter(ch =>
+      ch.name.toLowerCase().includes(query.toLowerCase())
+    )
+    .filter(ch =>
+      category === "All" ? true : ch.category === category
+    )
+    .filter(ch =>
+      sort === "all"
+        ? true
+        : sort === "live"
+        ? ch.protocol === "https"
+        : ch.protocol === "http"
+    );
 
   useEffect(() => {
     if (!current || !videoRef.current) return;
 
-    // Cleanup previous instance
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
@@ -33,14 +47,15 @@ export default function App() {
       hls.loadSource(current.url);
       hls.attachMedia(videoRef.current);
       hlsRef.current = hls;
-    } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+    } else if (
+      videoRef.current.canPlayType("application/vnd.apple.mpegurl")
+    ) {
       videoRef.current.src = current.url;
     }
   }, [current]);
 
   return (
     <div className="layout">
-      {/* SIDEBAR */}
       <aside className="sidebar">
         <h2>📺 ClickNWatch</h2>
 
@@ -48,11 +63,26 @@ export default function App() {
           type="text"
           placeholder="Search channel…"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
         />
 
+        <select
+          value={category}
+          onChange={e => setCategory(e.target.value)}
+        >
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        <div className="sort-bar">
+          <button onClick={() => setSort("all")}>All</button>
+          <button onClick={() => setSort("live")}>LIVE</button>
+          <button onClick={() => setSort("vlc")}>VLC</button>
+        </div>
+
         <div className="channel-list">
-          {filteredChannels.map((ch) => (
+          {filteredChannels.map(ch => (
             <button
               key={ch.id}
               className={`channel-btn ${
@@ -60,7 +90,7 @@ export default function App() {
               }`}
               onClick={() => setCurrent(ch)}
             >
-              {ch.name}
+              <span>{ch.name}</span>
               <span className={`badge ${ch.protocol}`}>
                 {ch.protocol === "https" ? "LIVE" : "VLC"}
               </span>
@@ -69,7 +99,6 @@ export default function App() {
         </div>
       </aside>
 
-      {/* PLAYER */}
       <main className="player-area">
         {!current && (
           <div className="placeholder">
@@ -89,17 +118,13 @@ export default function App() {
 
         {current?.protocol === "http" && (
           <div className="vlc-box">
-            <p>
-              <strong>{current.name}</strong>  
-              <br />
-              Not playable in browser
-            </p>
+            <p><strong>{current.name}</strong></p>
             <input
               readOnly
               value={current.url}
-              onFocus={(e) => e.target.select()}
+              onFocus={e => e.target.select()}
             />
-            <small>Open in VLC / IPTV Player</small>
+            <small>Open this URL in VLC / IPTV Player</small>
           </div>
         )}
       </main>
