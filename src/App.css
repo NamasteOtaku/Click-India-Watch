@@ -11,20 +11,22 @@ html, body, #root {
   font-family: Inter, system-ui, sans-serif;
 }
 
-/* LAYOUT */
+/* ===== MAIN LAYOUT ===== */
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  height: 100vh;
-  overflow: hidden;
+  height: 100vh;              /* 🔑 CRITICAL */
+  overflow: hidden;           /* 🔑 CRITICAL */
 }
 
-/* SIDEBAR */
+/* ===== SIDEBAR ===== */
 .sidebar {
   background: #161616;
   padding: 12px;
   display: flex;
   flex-direction: column;
+  height: 100vh;              /* 🔑 CRITICAL */
+  overflow: hidden;           /* 🔑 CRITICAL */
 }
 
 .sidebar h2 {
@@ -42,7 +44,7 @@ html, body, #root {
   color: #fff;
 }
 
-/* SORT */
+/* ===== SORT BAR ===== */
 .sort-bar {
   display: flex;
   gap: 6px;
@@ -62,13 +64,14 @@ html, body, #root {
   background: #333;
 }
 
-/* CHANNEL LIST */
+/* ===== CHANNEL LIST (SCROLLS) ===== */
 .channel-list {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1;                    /* 🔑 TAKES REMAINING HEIGHT */
+  overflow-y: auto;           /* 🔑 ENABLE SCROLL */
   padding-right: 4px;
 }
 
+/* ===== CHANNEL BUTTON ===== */
 .channel-btn {
   width: 100%;
   background: #1f1f1f;
@@ -92,7 +95,7 @@ html, body, #root {
   background: #333;
 }
 
-/* BADGES */
+/* ===== BADGES ===== */
 .badge {
   font-size: 10px;
   padding: 2px 6px;
@@ -107,27 +110,30 @@ html, body, #root {
   background: #7a2f0a;
 }
 
-/* PLAYER */
+/* ===== PLAYER AREA ===== */
 .player-area {
   background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  height: 100vh;              /* 🔑 LOCK HEIGHT */
+  overflow: hidden;
 }
 
+/* ===== VIDEO ===== */
 .player {
   width: 100%;
   height: 100%;
   background: black;
 }
 
+/* ===== PLACEHOLDER ===== */
 .placeholder {
   color: #777;
   font-size: 14px;
 }
 
-/* VLC FALLBACK */
+/* ===== VLC FALLBACK ===== */
 .vlc-box {
   background: #111;
   padding: 20px;
