@@ -2,8 +2,15 @@ import fs from "fs";
 import path from "path";
 import https from "https";
 
-const CHANNELS_OUTPUT = "src/data/channels.json";
+/**
+ * Directories
+ */
+const RAW_DIR = "data/raw";                // raw source files
+const CHANNELS_OUTPUT = "src/data/channels.json"; // future normalized output
 
+/**
+ * Raw sources (HTTPS only)
+ */
 const SOURCES = {
   IPTV_ORG_IN:
     "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/in.m3u",
