@@ -1,69 +1,123 @@
 import fs from "fs";
 import path from "path";
-import https from "https";
 
 /**
- * Directories
+ * Paths
  */
-const RAW_DIR = "data/raw";                // raw source files
-const CHANNELS_OUTPUT = "src/data/channels.json"; // future normalized output
+const RAW_DIR = "data/raw";
+const OUTPUT = "src/data/channels.json";
 
 /**
- * Raw sources (HTTPS only)
+ * Helpers
  */
-const SOURCES = {
-  IPTV_ORG_IN:
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/in.m3u",
-  LIVETVCOLLECTOR_IN:
-    "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/main/LiveTV/India/LiveTV"
-};
-
-function ensureDir(dir) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+function read(file) {
+  return fs.readFileSync(file, "utf-8");
 }
 
-function download(url, dest) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
+function write(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
 
-    https
-      .get(url, (res) => {
-        if (res.statusCode !== 200) {
-          reject(
-            new Error(`Failed to fetch ${url} (${res.statusCode})`)
-          );
-          return;
-        }
+/**
+ * Parse IPTV-ORG M3U
+ */
+function parseM3U(content) {
+  const lines = content.split("\n");
+  const channels = [];
 
-        res.pipe(file);
-        file.on("finish", () => {
-          file.close(resolve);
-        });
-      })
-      .on("error", (err) => {
-        fs.unlink(dest, () => {});
-        reject(err);
+  let current = null;
+
+  for (const line of lines) {
+    if (line.startsWith("#EXTINF")) {
+      const nameMatch = line.match(/,(.*)$/);
+      current = {
+        name: nameMatch ? nameMatch[1].trim() : "Unknown",
+        category: "General",
+        source: "iptv-org"
+      };
+    } else if (line.startsWith("http") && current) {
+      channels.push({
+        ...current,
+        url: line.trim()
       });
-  });
-}
-
-async function main() {
-  ensureDir(RAW_DIR);
-
-  console.log("▶ Fetching raw IPTV sources...");
-
-  for (const [name, url] of Object.entries(SOURCES)) {
-    const outFile = path.join(RAW_DIR, `${name}.txt`);
-    console.log(`  → ${name}`);
-    await download(url, outFile);
+      current = null;
+    }
   }
 
-  console.log("✔ Raw IPTV sources fetched successfully");
+  return channels;
 }
 
-main().catch((err) => {
-  console.error("✖ Fetch failed:", err.message);
-  process.exit(1);
-});
+/**
+ * Parse LiveTVCollector JSON
+ */
+function parseLiveTVCollector(content) {
+  let data;
+  try {
+    data = JSON.parse(content);
+  } catch {
+    return [];
+  }
+
+  if (!Array.isArray(data)) return [];
+
+  return data.map((item) => ({
+    name: item.name || "Unknown",
+    category: "General",
+    url: item.url,
+    source: "LiveTVCollector"
+  }));
+}
+
+/**
+ * Normalize
+ */
+function normalize(channels) {
+  const seen = new Set();
+  const result = [];
+
+  for (const ch of channels) {
+    if (!ch.url || seen.has(ch.url)) continue;
+    seen.add(ch.url);
+
+    result.push({
+      id: result.length + 1,
+      name: ch.name,
+      category: ch.category,
+      url: ch.url,
+      protocol: ch.url.startsWith("https") ? "https" : "http",
+      source: ch.source,
+      status: "unknown"
+    });
+  }
+
+  return result;
+}
+
+/**
+ * MAIN
+ */
+function main() {
+  console.log("▶ Parsing IPTV sources...");
+
+  const iptvRaw = read(path.join(RAW_DIR, "IPTV_ORG_IN.txt"));
+  const liveTvRaw = read(
+    path.join(RAW_DIR, "LIVETVCOLLECTOR_IN.txt")
+  );
+
+  const iptvChannels = parseM3U(iptvRaw);
+  const liveTvChannels = parseLiveTVCollector(liveTvRaw);
+
+  const allChannels = normalize([
+    ...iptvChannels,
+    ...liveTvChannels
+  ]);
+
+  write(OUTPUT, allChannels);
+
+  console.log(
+    `✔ Generated channels.json (${allChannels.length} channels)`
+  );
+}
+
+main();
