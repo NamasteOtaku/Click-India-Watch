@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "4TV News",
+    "category": "News",
+    "url": "https://cdn-4.pishow.tv/live/1007/master.m3u8",
+    "protocol": "https",
+    "status": "unknown"
+  },
+  {
+    "id": 2,
+    "name": "Aaj Tak",
+    "category": "News",
+    "url": "https://cdn-1.pishow.tv/live/391/master.m3u8",
+    "protocol": "https",
+    "status": "unknown"
+  }
+]
