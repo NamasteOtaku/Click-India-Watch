@@ -15,20 +15,84 @@ const IPTV_ORG_IN =
 const LIVETV_COLLECTOR_IN =
   "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/main/LiveTV/India/LiveTV";
 
+/* ================= CATEGORY MAP ================= */
+
+const CATEGORY_MAP = {
+  "📰 News Channels": [
+    "aaj tak","abp","india tv","republic","zee news","ndtv","news18",
+    "times now","cnn","mirror now","newsx","wion","bbc","al jazeera",
+    "france 24","dw","cgtn","fox","trt","iran"
+  ],
+
+  "🎬 Movie Channels": [
+    "b4u","zee cinema","bolly","goldmines","dangal","wow cinema",
+    "bollywood","roja","zee cine","dhamaka","filamchi","oscar movie"
+  ],
+
+  "🎵 Music Channels": [
+    "9xm","9x","b4u music","music india","sangeet","ptc music",
+    "shemaroo","songdew","yrf","dhoom","rtv music","beats","steelbird"
+  ],
+
+  "📺 General Entertainment Channels": [
+    "colors","sony","&tv","raj tv","kalaignar","sun tv","surya",
+    "gemini","mazhavil","kairali","manoranjan","enterr 10","amrita",
+    "moon tv","makkal","tamilan","thalaa"
+  ],
+
+  "📚 Educational & Devotional Channels": [
+    "gyandarshan","vyas","kite","dd bharati","aastha","sanskar",
+    "satsang","bhakti","aradhana","angel","subhavaartha","salvation",
+    "god tv","peace tv","madani","ishwar","total bhakti","svbc",
+    "shalom","shekinah","aadinath"
+  ],
+
+  "🧒 Kids & Youth": [
+    "gubbare","bal bharat","shinchan","doraemon","cbeebies",
+    "duck tv","pbs kids","zoo moo","jungle book"
+  ],
+
+  "🌍 Travel, Nature & Lifestyle": [
+    "travelxp","travel xp","safari","epic","bbc earth","wild earth",
+    "4k travel","food network","food food","discover","pet collective",
+    "weather","accu"
+  ],
+
+  "🎭 Comedy & Drama": [
+    "comedy","etv comedy","etv josh","zee dil se","bongo","movie club",
+    "hindi dubbing"
+  ],
+
+  "🕌 Islamic & Religious": [
+    "makkah","islam","sunnah","azan","waz","quran","madani"
+  ],
+
+  "⚽ Sports Channels": [
+    "dd sports","t sport","psn","redbull","real madrid","fifa",
+    "rta sports","sharjah","pro sport"
+  ],
+
+  "🏛️ Government & Parliamentary": [
+    "sansad","dd national","dd news","dd india","dd "
+  ]
+};
+
 /* ================= HELPERS ================= */
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
-function inferCategory(name = "") {
+function detectCategory(name = "") {
   const n = name.toLowerCase();
-  if (n.includes("news")) return "News";
-  if (n.includes("sport")) return "Sports";
-  if (n.includes("movie") || n.includes("cinema")) return "Movies";
-  if (n.includes("kids") || n.includes("cartoon")) return "Kids";
-  if (n.includes("music")) return "Music";
-  return "Entertainment";
+
+  for (const [category, keywords] of Object.entries(CATEGORY_MAP)) {
+    if (keywords.some(k => n.includes(k))) {
+      return category;
+    }
+  }
+
+  return "🧩 Others / Miscellaneous";
 }
 
 function parseM3U(content) {
@@ -88,7 +152,7 @@ async function checkHealth(url) {
 /* ================= MAIN ================= */
 
 async function main() {
-  console.log("▶ Fetching & checking IPTV sources…");
+  console.log("▶ Fetching IPTV + LiveTVCollector (categorized)…");
 
   ensureDir(OUTPUT_DIR);
 
@@ -118,7 +182,7 @@ async function main() {
       id: finalChannels.length + 1,
       name: ch.name,
       url: ch.url,
-      category: inferCategory(ch.name),
+      category: detectCategory(ch.name),
       protocol: ch.url.startsWith("https") ? "https" : "http",
       source: ch.source,
       status
