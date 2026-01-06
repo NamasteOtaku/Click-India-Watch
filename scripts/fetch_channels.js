@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import https from "https";
 
 /**
  * Paths
@@ -8,49 +9,66 @@ const RAW_DIR = "data/raw";
 const OUTPUT = "src/data/channels.json";
 
 /**
- * Helpers
+ * Sources
  */
+const SOURCES = {
+  IPTV_ORG_IN:
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/in.m3u",
+  LIVETVCOLLECTOR_IN:
+    "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/main/LiveTV/India/LiveTV"
+};
+
+/* ---------- helpers ---------- */
+
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+function download(url, dest) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+
+    https
+      .get(url, (res) => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`Failed ${url} (${res.statusCode})`));
+          return;
+        }
+        res.pipe(file);
+        file.on("finish", () => file.close(resolve));
+      })
+      .on("error", (err) => {
+        fs.unlink(dest, () => {});
+        reject(err);
+      });
+  });
+}
+
 function read(file) {
   return fs.readFileSync(file, "utf-8");
 }
 
-function write(file, data) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
+/* ---------- parsers ---------- */
 
-/**
- * Parse IPTV-ORG M3U
- */
 function parseM3U(content) {
   const lines = content.split("\n");
-  const channels = [];
-
+  const out = [];
   let current = null;
 
   for (const line of lines) {
     if (line.startsWith("#EXTINF")) {
-      const nameMatch = line.match(/,(.*)$/);
-      current = {
-        name: nameMatch ? nameMatch[1].trim() : "Unknown",
-        category: "General",
-        source: "iptv-org"
-      };
+      const name = line.split(",").pop()?.trim();
+      current = { name, category: "General", source: "iptv-org" };
     } else if (line.startsWith("http") && current) {
-      channels.push({
-        ...current,
-        url: line.trim()
-      });
+      out.push({ ...current, url: line.trim() });
       current = null;
     }
   }
-
-  return channels;
+  return out;
 }
 
-/**
- * Parse LiveTVCollector JSON
- */
 function parseLiveTVCollector(content) {
   let data;
   try {
@@ -61,27 +79,26 @@ function parseLiveTVCollector(content) {
 
   if (!Array.isArray(data)) return [];
 
-  return data.map((item) => ({
-    name: item.name || "Unknown",
+  return data.map((ch) => ({
+    name: ch.name || "Unknown",
+    url: ch.url,
     category: "General",
-    url: item.url,
     source: "LiveTVCollector"
   }));
 }
 
-/**
- * Normalize
- */
-function normalize(channels) {
-  const seen = new Set();
-  const result = [];
+/* ---------- normalize ---------- */
 
-  for (const ch of channels) {
+function normalize(list) {
+  const seen = new Set();
+  const out = [];
+
+  for (const ch of list) {
     if (!ch.url || seen.has(ch.url)) continue;
     seen.add(ch.url);
 
-    result.push({
-      id: result.length + 1,
+    out.push({
+      id: out.length + 1,
       name: ch.name,
       category: ch.category,
       url: ch.url,
@@ -90,34 +107,38 @@ function normalize(channels) {
       status: "unknown"
     });
   }
-
-  return result;
+  return out;
 }
 
-/**
- * MAIN
- */
-function main() {
-  console.log("▶ Parsing IPTV sources...");
+/* ---------- main ---------- */
 
+async function main() {
+  console.log("▶ Fetching + parsing IPTV sources...");
+
+  ensureDir(RAW_DIR);
+  ensureDir(path.dirname(OUTPUT));
+
+  // Fetch
+  for (const [name, url] of Object.entries(SOURCES)) {
+    const dest = path.join(RAW_DIR, `${name}.txt`);
+    await download(url, dest);
+  }
+
+  // Parse
   const iptvRaw = read(path.join(RAW_DIR, "IPTV_ORG_IN.txt"));
-  const liveTvRaw = read(
-    path.join(RAW_DIR, "LIVETVCOLLECTOR_IN.txt")
-  );
+  const liveRaw = read(path.join(RAW_DIR, "LIVETVCOLLECTOR_IN.txt"));
 
-  const iptvChannels = parseM3U(iptvRaw);
-  const liveTvChannels = parseLiveTVCollector(liveTvRaw);
-
-  const allChannels = normalize([
-    ...iptvChannels,
-    ...liveTvChannels
+  const channels = normalize([
+    ...parseM3U(iptvRaw),
+    ...parseLiveTVCollector(liveRaw)
   ]);
 
-  write(OUTPUT, allChannels);
+  fs.writeFileSync(OUTPUT, JSON.stringify(channels, null, 2));
 
-  console.log(
-    `✔ Generated channels.json (${allChannels.length} channels)`
-  );
+  console.log(`✔ channels.json generated (${channels.length} channels)`);
 }
 
-main();
+main().catch((err) => {
+  console.error("✖ Build failed:", err.message);
+  process.exit(1);
+});
