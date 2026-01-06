@@ -1,8 +1,8 @@
-name: Update IPTV Channels
+name: Auto Update IPTV Channels
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # every 6 hours
+    - cron: "0 */6 * * *"   # every 6 hours
   workflow_dispatch:
 
 jobs:
@@ -21,8 +21,8 @@ jobs:
       - run: node scripts/fetch_channels.js
 
       - run: |
-          git config user.name "auto-bot"
-          git config user.email "bot@github.com"
-          git add data/channels.json
-          git commit -m "chore: auto update channels" || echo "No changes"
+          git config user.name "ip-tv-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add src/data/channels.json data/health-cache.json
+          git commit -m "chore: auto refresh IPTV links" || echo "No changes"
           git push
