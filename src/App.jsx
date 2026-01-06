@@ -1,137 +1,108 @@
-import "./App.css";
-import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
+import Hls from "hls.js";
 import channels from "./data/channels.json";
+import "./App.css";
 
-function App() {
+export default function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
 
-  const [status, setStatus] = useState("Waiting for channel selection");
-  const [activeChannel, setActiveChannel] = useState(null);
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    return () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-      }
-    };
-  }, []);
-
-  function playChannel(channel) {
-    setActiveChannel(channel);
-
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-
-    const video = videoRef.current;
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-
-    if (channel.protocol === "http") {
-      setStatus("HTTP stream. Copy URL and play in VLC.");
-      return;
-    }
-
-    setStatus(`Loading ${channel.name}...`);
-
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = channel.url;
-      video.play();
-      setStatus(`Playing ${channel.name}`);
-      return;
-    }
-
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hlsRef.current = hls;
-
-      hls.loadSource(channel.url);
-      hls.attachMedia(video);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-        setStatus(`Playing ${channel.name}`);
-      });
-
-      hls.on(Hls.Events.ERROR, () => {
-        setStatus(`Error playing ${channel.name}`);
-      });
-    } else {
-      setStatus("HLS not supported in this browser");
-    }
-  }
-
-  function copyUrl() {
-    if (!activeChannel) return;
-    navigator.clipboard.writeText(activeChannel.url);
-    setStatus("Stream URL copied. Open VLC → Media → Open Network Stream.");
-  }
+  const [current, setCurrent] = useState(null);
 
   const filteredChannels = channels.filter((ch) =>
     ch.name.toLowerCase().includes(query.toLowerCase())
   );
 
+  useEffect(() => {
+    if (!current || !videoRef.current) return;
+
+    // Cleanup previous instance
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+
+    if (current.protocol === "http") {
+      videoRef.current.src = "";
+      return;
+    }
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(current.url);
+      hls.attachMedia(videoRef.current);
+      hlsRef.current = hls;
+    } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+      videoRef.current.src = current.url;
+    }
+  }, [current]);
+
   return (
-    <div className="app">
+    <div className="layout">
+      {/* SIDEBAR */}
       <aside className="sidebar">
-        <h2>Channels</h2>
+        <h2>📺 ClickNWatch</h2>
 
         <input
-          className="search"
-          placeholder="Search channels..."
+          type="text"
+          placeholder="Search channel…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
 
         <div className="channel-list">
           {filteredChannels.map((ch) => (
-            <div
+            <button
               key={ch.id}
-              className={`channel ${
-                activeChannel?.id === ch.id ? "active" : ""
+              className={`channel-btn ${
+                current?.id === ch.id ? "active" : ""
               }`}
-              onClick={() => playChannel(ch)}
+              onClick={() => setCurrent(ch)}
             >
-              <span>{ch.name}</span>
-              <span
-                className={`badge ${
-                  ch.protocol === "https" ? "ok" : "warn"
-                }`}
-              >
+              {ch.name}
+              <span className={`badge ${ch.protocol}`}>
                 {ch.protocol === "https" ? "LIVE" : "VLC"}
               </span>
-            </div>
+            </button>
           ))}
         </div>
-
-        <div className="ad-box">Ad Slot 1</div>
-        <div className="ad-box">Ad Slot 2</div>
       </aside>
 
+      {/* PLAYER */}
       <main className="player-area">
-        <div className="player-inner">
-          <h1>Click-India-Watch</h1>
-
-          <div className="player-wrapper">
-            <video ref={videoRef} controls />
+        {!current && (
+          <div className="placeholder">
+            Waiting for channel selection
           </div>
+        )}
 
-          <div className="status">{status}</div>
+        {current?.protocol === "https" && (
+          <video
+            ref={videoRef}
+            controls
+            autoPlay
+            muted
+            className="player"
+          />
+        )}
 
-          {activeChannel?.protocol === "http" && (
-            <button onClick={copyUrl} style={{ marginTop: "10px" }}>
-              Copy Stream URL (VLC)
-            </button>
-          )}
-        </div>
+        {current?.protocol === "http" && (
+          <div className="vlc-box">
+            <p>
+              <strong>{current.name}</strong>  
+              <br />
+              Not playable in browser
+            </p>
+            <input
+              readOnly
+              value={current.url}
+              onFocus={(e) => e.target.select()}
+            />
+            <small>Open in VLC / IPTV Player</small>
+          </div>
+        )}
       </main>
     </div>
   );
 }
-
-export default App;
