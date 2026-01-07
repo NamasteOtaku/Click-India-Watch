@@ -6,6 +6,7 @@ import "./App.css";
 export default function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
+  const adLoadedRef = useRef(false);
 
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
@@ -13,6 +14,7 @@ export default function App() {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  /* -------- CLEAN CHANNEL DATA -------- */
   const cleanChannels = channels.filter(
     c => c && c.name && c.name.trim().length > 1
   );
@@ -23,6 +25,7 @@ export default function App() {
     .filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
     .filter(c => category === "All" || c.category === category);
 
+  /* -------- PLAYER LOGIC -------- */
   useEffect(() => {
     if (!current) return;
 
@@ -39,30 +42,41 @@ export default function App() {
     hls.attachMedia(videoRef.current);
     hlsRef.current = hls;
 
-    hls.on(Hls.Events.ERROR, () =>
-      setSourceIndex(i => i + 1)
-    );
+    hls.on(Hls.Events.ERROR, () => {
+      setSourceIndex(i => i + 1);
+    });
   }, [current, sourceIndex]);
+
+  /* -------- ADSTERRA NATIVE AD (SAFE LOAD) -------- */
+  useEffect(() => {
+    if (adLoadedRef.current) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    script.src =
+      "https://pl28421553.effectivegatecpm.com/fb94153b3dce2ffda9a4fa97861e9c0b/invoke.js";
+
+    document.body.appendChild(script);
+    adLoadedRef.current = true;
+  }, []);
 
   return (
     <div className="app">
-
-      {/* HEADER */}
+      {/* TOP BAR */}
       <header className="topbar">
-        <button
-          className="hamburger"
-          onClick={() => setSidebarOpen(true)}
-        >
+        <button className="hamburger" onClick={() => setSidebarOpen(true)}>
           ☰
         </button>
         <h1>ClickNWatch</h1>
       </header>
 
       <div className="layout">
-
         {/* SIDEBAR */}
         <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-          <button className="close" onClick={() => setSidebarOpen(false)}>×</button>
+          <button className="close" onClick={() => setSidebarOpen(false)}>
+            ×
+          </button>
 
           <input
             className="search"
@@ -98,10 +112,9 @@ export default function App() {
           </div>
         </aside>
 
-        {/* MAIN */}
+        {/* MAIN CONTENT */}
         <main className="main">
-
-          {/* PLAYER (FIXED POSITION) */}
+          {/* PLAYER (FIXED SIZE, NO JUMP) */}
           <div className="player-wrapper">
             {!current && <div className="placeholder">Select a channel</div>}
             <video
@@ -113,11 +126,10 @@ export default function App() {
             />
           </div>
 
-          {/* AD PLACEHOLDER (MOBILE SAFE) */}
-          <div className="ad-placeholder">
-            Ad Space
+          {/* ADSTERRA NATIVE CONTAINER */}
+          <div className="ad-native">
+            <div id="container-fb94153b3dce2ffda9a4fa97861e9c0b"></div>
           </div>
-
         </main>
       </div>
     </div>
