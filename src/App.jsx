@@ -61,10 +61,22 @@ export default function App() {
 
         <div className="channel-list">
           {filtered.map(ch => (
-            <button key={ch.name} onClick={() => { setCurrent(ch); setSourceIndex(0); }}>
-              {ch.name}
+            <button
+              className={`channel-btn ${current?.name === ch.name ? "active" : ""}`}
+              key={ch.name}
+              onClick={() => { setCurrent(ch); setSourceIndex(0); }}
+            >
+              <span className="channel-name">{ch.name}</span>
+
+              <span className="badges">
+                {ch.sources.some(s => s.status === "live") && <span className="badge live">LIVE</span>}
+                {ch.sources.some(s => s.protocol === "http") && <span className="badge vlc">VLC</span>}
+              </span>
             </button>
           ))}
+          <div className="ad-container">
+  <div id="container-fb94153b3dce2ffda9a4fa97861e9c0b"></div>
+</div>
         </div>
       </aside>
 

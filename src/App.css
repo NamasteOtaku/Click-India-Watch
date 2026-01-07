@@ -3,151 +3,156 @@
 }
 
 html, body, #root {
-  margin: 0;
-  padding: 0;
   height: 100%;
-  background: #0f0f0f;
+  margin: 0;
+  background: #0e0e0e;
   color: #fff;
   font-family: Inter, system-ui, sans-serif;
 }
 
-/* ===== MAIN LAYOUT ===== */
+/* ===== LAYOUT ===== */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  height: 100vh;              /* 🔑 CRITICAL */
-  overflow: hidden;           /* 🔑 CRITICAL */
+  grid-template-columns: 300px 1fr;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  background: #161616;
+  background: #141414;
   padding: 12px;
   display: flex;
   flex-direction: column;
-  height: 100vh;              /* 🔑 CRITICAL */
-  overflow: hidden;           /* 🔑 CRITICAL */
+  height: 100vh;
+  overflow: hidden;
+  border-right: 1px solid #222;
 }
 
 .sidebar h2 {
-  margin: 4px 0 10px;
-  font-size: 18px;
+  margin: 4px 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
 }
 
+/* ===== INPUTS ===== */
 .sidebar input,
 .sidebar select {
+  width: 100%;
+  padding: 8px 10px;
   margin-bottom: 8px;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
-  background: #222;
+  border-radius: 6px;
+  border: 1px solid #2a2a2a;
+  background: #1b1b1b;
   color: #fff;
+  font-size: 13px;
 }
 
-/* ===== SORT BAR ===== */
-.sort-bar {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+.sidebar input:focus,
+.sidebar select:focus {
+  outline: none;
+  border-color: #444;
 }
 
-.sort-bar button {
-  flex: 1;
-  padding: 6px;
-  background: #1f1f1f;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-}
-
-.sort-bar button:hover {
-  background: #333;
-}
-
-/* ===== CHANNEL LIST (SCROLLS) ===== */
+/* ===== CHANNEL LIST ===== */
 .channel-list {
-  flex: 1;                    /* 🔑 TAKES REMAINING HEIGHT */
-  overflow-y: auto;           /* 🔑 ENABLE SCROLL */
+  flex: 1;
+  overflow-y: auto;
   padding-right: 4px;
 }
 
-/* ===== CHANNEL BUTTON ===== */
+/* ===== CHANNEL ITEM ===== */
 .channel-btn {
   width: 100%;
-  background: #1f1f1f;
-  color: #fff;
-  border: none;
-  padding: 8px;
+  background: #1a1a1a;
+  border: 1px solid #242424;
+  padding: 8px 10px;
   margin-bottom: 6px;
-  text-align: left;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease, border 0.15s ease;
 }
 
 .channel-btn:hover {
-  background: #2a2a2a;
+  background: #242424;
+  border-color: #333;
 }
 
 .channel-btn.active {
-  background: #333;
+  background: #2b2b2b;
+  border-color: #555;
+}
+
+/* ===== CHANNEL NAME ===== */
+.channel-name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  flex: 1;
 }
 
 /* ===== BADGES ===== */
-.badge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 3px;
+.badges {
+  display: flex;
+  gap: 4px;
 }
 
-.badge.https {
+.badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.badge.live {
   background: #0a7a2f;
 }
 
-.badge.http {
+.badge.dead {
   background: #7a2f0a;
 }
 
-/* ===== PLAYER AREA ===== */
+.badge.vlc {
+  background: #444;
+}
+
+.badge.iptv {
+  background: #2a5bd7;
+}
+
+.badge.collector {
+  background: #7b2ad7;
+}
+
+/* ===== PLAYER ===== */
 .player-area {
   background: #000;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;              /* 🔑 LOCK HEIGHT */
-  overflow: hidden;
 }
 
-/* ===== VIDEO ===== */
 .player {
   width: 100%;
   height: 100%;
   background: black;
 }
 
-/* ===== PLACEHOLDER ===== */
 .placeholder {
   color: #777;
   font-size: 14px;
 }
 
-/* ===== VLC FALLBACK ===== */
-.vlc-box {
-  background: #111;
-  padding: 20px;
-  border-radius: 6px;
-  width: 80%;
-  max-width: 500px;
-  text-align: center;
-}
-
-.vlc-box input {
-  width: 100%;
+.ad-container {
   margin-top: 10px;
   padding: 6px;
-  background: #000;
-  color: #0f0;
-  border: 1px solid #333;
+  border-top: 1px solid #222;
+  background: #111;
 }
