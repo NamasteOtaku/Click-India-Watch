@@ -6,7 +6,6 @@ import fetch from "node-fetch";
 
 const OUTPUT_DIR = "src/data";
 const OUTPUT_FILE = path.join(OUTPUT_DIR, "channels.json");
-
 const CACHE_FILE = "data/health-cache.json";
 
 /* ================= CONFIG ================= */
@@ -25,9 +24,9 @@ const CATEGORY_MAP = {
   "📰 News Channels": ["news","aaj","abp","zee","ndtv","cnn","wion"],
   "🎬 Movie Channels": ["movie","cinema","b4u","bolly","goldmines"],
   "🎵 Music Channels": ["music","9x","b4u music","sangeet","yrf"],
-  "📺 General Entertainment Channels": ["tv","sony","colors","sun","star"],
+  "📺 General Entertainment Channels": ["sony","colors","sun","star","tv"],
   "📚 Educational & Devotional Channels": ["bhakti","aastha","god","peace","dd"],
-  "🧒 Kids & Youth": ["kids","cartoon","bal","cbeebies"],
+  "🧒 Kids & Youth": ["kids","cartoon","bal"],
   "🌍 Travel, Nature & Lifestyle": ["travel","food","wild","earth"],
   "🎭 Comedy & Drama": ["comedy","drama","bongo"],
   "🕌 Islamic & Religious": ["islam","quran","madani"],
@@ -63,6 +62,15 @@ function detectCategory(name = "") {
   return "🧩 Others / Miscellaneous";
 }
 
+function normalizeName(name = "") {
+  return name
+    .toLowerCase()
+    .replace(/\(.*?\)/g, "")
+    .replace(/hd|sd|fhd|uhd|\d+p/g, "")
+    .replace(/[^a-z0-9 ]/g, "")
+    .trim();
+}
+
 function parseM3U(content) {
   const lines = content.split("\n");
   const out = [];
@@ -83,15 +91,19 @@ function parseLiveTVCollector(jsonText) {
   let data;
   try { data = JSON.parse(jsonText); } catch { return []; }
   if (!Array.isArray(data)) return [];
-  return data.map(ch => ({
-    name: ch.name?.trim(),
-    url: ch.url?.trim(),
-    source: "LiveTVCollector"
-  })).filter(ch => ch.name && ch.url);
+  return data
+    .filter(ch => ch.name && ch.url)
+    .map(ch => ({
+      name: ch.name.trim(),
+      url: ch.url.trim(),
+      source: "LiveTVCollector"
+    }));
 }
 
 async function checkHealth(url, cache) {
-  if (!url.startsWith("https")) return { status: "vlc", checkedAt: Date.now() };
+  if (!url.startsWith("https")) {
+    return { status: "vlc", checkedAt: Date.now() };
+  }
 
   const cached = cache[url];
   if (cached && Date.now() - cached.checkedAt < HEALTH_TTL) {
@@ -99,7 +111,11 @@ async function checkHealth(url, cache) {
   }
 
   try {
-    const res = await fetch(url, { method: "HEAD", redirect: "follow", timeout: 5000 });
+    const res = await fetch(url, {
+      method: "HEAD",
+      redirect: "follow",
+      timeout: 5000
+    });
     return { status: res.ok ? "live" : "dead", checkedAt: Date.now() };
   } catch {
     return { status: "dead", checkedAt: Date.now() };
@@ -109,10 +125,9 @@ async function checkHealth(url, cache) {
 /* ================= MAIN ================= */
 
 async function main() {
-  console.log("▶ Fetching IPTV data with cached health checks…");
+  console.log("▶ Fetching IPTV data with multi-source fallback…");
 
   ensureDir(OUTPUT_DIR);
-
   const healthCache = loadCache();
 
   const [iptvRes, collectorRes] = await Promise.all([
@@ -125,26 +140,37 @@ async function main() {
     ...parseLiveTVCollector(await collectorRes.text())
   ];
 
-  const seen = new Set();
-  const finalChannels = [];
+  const channelMap = {};
 
   for (const ch of merged) {
-    if (!ch.url || seen.has(ch.url)) continue;
-    seen.add(ch.url);
+    const key = normalizeName(ch.name);
+    if (!key || !ch.url) continue;
+
+    if (!channelMap[key]) {
+      channelMap[key] = {
+        name: ch.name,
+        category: detectCategory(ch.name),
+        sources: []
+      };
+    }
 
     const health = await checkHealth(ch.url, healthCache);
     healthCache[ch.url] = health;
 
-    finalChannels.push({
-      id: finalChannels.length + 1,
-      name: ch.name,
+    channelMap[key].sources.push({
       url: ch.url,
-      category: detectCategory(ch.name),
       protocol: ch.url.startsWith("https") ? "https" : "http",
-      source: ch.source,
-      status: health.status
+      status: health.status,
+      source: ch.source
     });
   }
+
+  const finalChannels = Object.values(channelMap).map((ch, i) => ({
+    id: i + 1,
+    name: ch.name,
+    category: ch.category,
+    sources: ch.sources
+  }));
 
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(finalChannels, null, 2));
   saveCache(healthCache);

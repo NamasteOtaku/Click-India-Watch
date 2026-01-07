@@ -9,50 +9,55 @@ export default function App() {
 
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const [sort, setSort] = useState("all"); // all | live | vlc
+  const [sort, setSort] = useState("all");
   const [current, setCurrent] = useState(null);
+  const [sourceIndex, setSourceIndex] = useState(0);
 
   const categories = ["All", ...new Set(channels.map(c => c.category))];
 
   const filteredChannels = channels
-    .filter(ch =>
-      ch.name.toLowerCase().includes(query.toLowerCase())
-    )
-    .filter(ch =>
-      category === "All" ? true : ch.category === category
-    )
-    .filter(ch =>
+    .filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
+    .filter(c => category === "All" || c.category === category)
+    .filter(c =>
       sort === "all"
         ? true
         : sort === "live"
-        ? ch.protocol === "https"
-        : ch.protocol === "http"
+        ? c.sources.some(s => s.protocol === "https" && s.status === "live")
+        : c.sources.some(s => s.protocol === "http")
     );
 
   useEffect(() => {
-    if (!current || !videoRef.current) return;
+    if (!current) return;
+
+    const sources = current.sources
+      .filter(s => s.protocol === "https" && s.status === "live");
+
+    if (!sources[sourceIndex]) return;
 
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
     }
 
-    if (current.protocol === "http") {
-      videoRef.current.src = "";
-      return;
-    }
-
     if (Hls.isSupported()) {
       const hls = new Hls();
-      hls.loadSource(current.url);
+      hls.loadSource(sources[sourceIndex].url);
       hls.attachMedia(videoRef.current);
       hlsRef.current = hls;
-    } else if (
-      videoRef.current.canPlayType("application/vnd.apple.mpegurl")
-    ) {
-      videoRef.current.src = current.url;
+
+      hls.on(Hls.Events.ERROR, () => {
+        setSourceIndex(i => i + 1);
+      });
     }
-  }, [current]);
+  }, [current, sourceIndex]);
+
+  function selectChannel(ch) {
+    setCurrent(ch);
+    setSourceIndex(0);
+  }
+
+  const httpsSources = current?.sources.filter(s => s.protocol === "https" && s.status === "live") || [];
+  const httpSources = current?.sources.filter(s => s.protocol === "http") || [];
 
   return (
     <div className="layout">
@@ -60,19 +65,13 @@ export default function App() {
         <h2>📺 ClickNWatch</h2>
 
         <input
-          type="text"
           placeholder="Search channel…"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
 
-        <select
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-        >
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+        <select value={category} onChange={e => setCategory(e.target.value)}>
+          {categories.map(c => <option key={c}>{c}</option>)}
         </select>
 
         <div className="sort-bar">
@@ -83,48 +82,25 @@ export default function App() {
 
         <div className="channel-list">
           {filteredChannels.map(ch => (
-            <button
-              key={ch.id}
-              className={`channel-btn ${
-                current?.id === ch.id ? "active" : ""
-              }`}
-              onClick={() => setCurrent(ch)}
-            >
-              <span>{ch.name}</span>
-              <span className={`badge ${ch.protocol}`}>
-                {ch.protocol === "https" ? "LIVE" : "VLC"}
-              </span>
+            <button key={ch.id} className="channel-btn" onClick={() => selectChannel(ch)}>
+              {ch.name}
             </button>
           ))}
         </div>
       </aside>
 
       <main className="player-area">
-        {!current && (
-          <div className="placeholder">
-            Waiting for channel selection
-          </div>
+        {!current && <div className="placeholder">Select a channel</div>}
+
+        {httpsSources.length > 0 && (
+          <video ref={videoRef} controls autoPlay muted className="player" />
         )}
 
-        {current?.protocol === "https" && (
-          <video
-            ref={videoRef}
-            controls
-            autoPlay
-            muted
-            className="player"
-          />
-        )}
-
-        {current?.protocol === "http" && (
+        {httpsSources.length === 0 && httpSources.length > 0 && (
           <div className="vlc-box">
-            <p><strong>{current.name}</strong></p>
-            <input
-              readOnly
-              value={current.url}
-              onFocus={e => e.target.select()}
-            />
-            <small>Open this URL in VLC / IPTV Player</small>
+            <p>No browser-playable stream.</p>
+            <input readOnly value={httpSources[0].url} />
+            <small>Open in VLC / IPTV Player</small>
           </div>
         )}
       </main>
