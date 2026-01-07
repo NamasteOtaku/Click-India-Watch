@@ -10,7 +10,7 @@ html, body, #root {
   font-family: Inter, system-ui, sans-serif;
 }
 
-/* ===== LAYOUT ===== */
+/* ===== MAIN LAYOUT ===== */
 .layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -30,9 +30,8 @@ html, body, #root {
 }
 
 .sidebar h2 {
-  margin: 4px 0 12px;
+  margin: 6px 0 12px;
   font-size: 20px;
-  font-weight: 600;
   text-align: center;
 }
 
@@ -62,7 +61,7 @@ html, body, #root {
   padding-right: 4px;
 }
 
-/* ===== CHANNEL ITEM ===== */
+/* ===== CHANNEL BUTTON ===== */
 .channel-btn {
   width: 100%;
   background: #1a1a1a;
@@ -106,7 +105,6 @@ html, body, #root {
   font-size: 9px;
   padding: 2px 6px;
   border-radius: 3px;
-  text-transform: uppercase;
   font-weight: 600;
 }
 
@@ -114,20 +112,8 @@ html, body, #root {
   background: #0a7a2f;
 }
 
-.badge.dead {
-  background: #7a2f0a;
-}
-
 .badge.vlc {
   background: #444;
-}
-
-.badge.iptv {
-  background: #2a5bd7;
-}
-
-.badge.collector {
-  background: #7b2ad7;
 }
 
 /* ===== PLAYER ===== */
@@ -150,9 +136,10 @@ html, body, #root {
   font-size: 14px;
 }
 
+/* ===== ADSTERRA ===== */
 .ad-container {
   margin-top: 10px;
   padding: 6px;
-  border-top: 1px solid #222;
   background: #111;
+  border-top: 1px solid #222;
 }
