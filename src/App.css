@@ -1,169 +1,76 @@
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  height: 100%;
-  background: #000;
-  color: #fff;
-  font-family: system-ui, sans-serif;
-}
-
-#root {
-  height: 100%;
-  background: #000;
-}
-
-/* 🔥 IMPORTANT FIX */
-.app {
-  min-height: 100vh;
-  background: #000;
-}
-
-/* ===== MOBILE HEADER ===== */
-.mobile-header {
-  display: none;
-  height: 52px;
-  background: #111;
-  align-items: center;
-  padding: 0 12px;
-  border-bottom: 1px solid #222;
-}
-
-.menu-btn {
-  font-size: 22px;
-  background: none;
-  border: none;
-  color: #fff;
-}
-
-.brand {
-  margin-left: 12px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* ===== LAYOUT ===== */
+/* ===== ROOT LAYOUT ===== */
 .layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
+  display: flex;
   height: 100vh;
-  background: #000; /* 🔥 FIX */
+  overflow: hidden;
+  background: #0b0b0b;
+  color: #fff;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  background: #141414;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
+  width: 300px;
+  min-width: 260px;
+  background: #111;
+  padding: 12px;
+  overflow-y: auto;
   border-right: 1px solid #222;
 }
 
-.sidebar-header {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+.sidebar h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
 }
 
-/* ===== INPUTS ===== */
-.sidebar input,
-.sidebar select {
-  margin-bottom: 8px;
-  padding: 8px;
-  background: #1b1b1b;
-  border: 1px solid #333;
-  color: #fff;
-  border-radius: 6px;
-}
-
-/* ===== CHANNEL LIST ===== */
-.channel-list {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.channel-btn {
-  width: 100%;
-  background: #1a1a1a;
-  color: #fff; /* 🔥 FIX */
-  border: 1px solid #333;
-  padding: 10px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.channel-name {
-  font-size: 14px;
-  line-height: 1.3;
-  max-width: 70%;
-}
-
-/* ===== BADGES ===== */
-.badge {
-  font-size: 10px;
-  padding: 3px 6px;
-  border-radius: 4px;
-}
-
-.badge.live { background: green; }
-.badge.vlc { background: #444; }
-
-/* ===== PLAYER ===== */
+/* ===== MAIN PLAYER AREA ===== */
 .player-area {
-  background: #000; /* 🔥 FIX */
+  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;      /* 🔑 no centering */
+  justify-content: flex-start; /* 🔑 stick to top */
+  padding: 12px;
+  overflow: hidden;
 }
 
-.video-wrapper {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #000;
-}
-
+/* ===== VIDEO PLAYER ===== */
 .player {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  max-height: 60vh;
+  background: #000;
+  border-radius: 8px;
 }
 
 /* ===== PLACEHOLDER ===== */
 .placeholder {
-  color: #777;
+  width: 100%;
+  height: 50vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  border-radius: 8px;
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .mobile-header {
-    display: flex;
-  }
+/* ===== CHANNEL LIST ===== */
+.channel-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  .layout {
-    grid-template-columns: 1fr;
-    height: calc(100vh - 52px);
-  }
+.channel-list button {
+  text-align: left;
+  padding: 8px 10px;
+  background: #1a1a1a;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+}
 
-  .sidebar {
-    position: fixed;
-    top: 52px;
-    left: -100%;
-    width: 85%;
-    height: calc(100vh - 52px);
-    z-index: 10;
-    transition: left 0.3s ease;
-  }
-
-  .sidebar.open {
-    left: 0;
-  }
-
-  .sidebar-header {
-    display: flex;
-  }
+.channel-list button:hover {
+  background: #2a2a2a;
 }
