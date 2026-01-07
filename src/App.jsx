@@ -16,7 +16,7 @@ export default function App() {
   const categories = ["All", ...new Set(channels.map(c => c.category))];
   const languages = ["All", ...new Set(channels.map(c => c.language))];
 
-  const filteredChannels = channels
+  const filtered = channels
     .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
     .filter(c => category === "All" || c.category === category)
     .filter(c => language === "All" || c.language === language);
@@ -30,52 +30,39 @@ export default function App() {
 
     if (!playable[sourceIndex]) return;
 
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
+    if (hlsRef.current) hlsRef.current.destroy();
 
     const hls = new Hls();
     hls.loadSource(playable[sourceIndex].url);
     hls.attachMedia(videoRef.current);
     hlsRef.current = hls;
 
-    hls.on(Hls.Events.ERROR, () => {
-      setSourceIndex(i => i + 1);
-    });
-
+    hls.on(Hls.Events.ERROR, () => setSourceIndex(i => i + 1));
   }, [current, sourceIndex]);
 
   return (
     <div className="layout">
-      {/* ===== SIDEBAR ===== */}
       <aside className="sidebar">
         <h2>ClickNWatch</h2>
 
         <input
-          type="text"
           placeholder="Search channels…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
 
         <select value={category} onChange={e => setCategory(e.target.value)}>
-          {categories.map(c => (
-            <option key={c}>{c}</option>
-          ))}
+          {categories.map(c => <option key={c}>{c}</option>)}
         </select>
 
         <select value={language} onChange={e => setLanguage(e.target.value)}>
-          {languages.map(l => (
-            <option key={l}>{l}</option>
-          ))}
+          {languages.map(l => <option key={l}>{l}</option>)}
         </select>
 
-        {/* ===== CHANNEL LIST ===== */}
         <div className="channel-list">
-          {filteredChannels.map(ch => {
-            const hasLive = ch.sources.some(s => s.status === "live");
-            const hasVlc = ch.sources.some(s => s.protocol === "http");
+          {filtered.map(ch => {
+            const live = ch.sources.some(s => s.status === "live");
+            const vlc = ch.sources.some(s => s.protocol === "http");
 
             return (
               <button
@@ -87,39 +74,23 @@ export default function App() {
                 }}
               >
                 <span className="channel-name">{ch.name}</span>
-
                 <span className="badges">
-                  {hasLive && <span className="badge live">LIVE</span>}
-                  {hasVlc && <span className="badge vlc">VLC</span>}
+                  {live && <span className="badge live">LIVE</span>}
+                  {vlc && <span className="badge vlc">VLC</span>}
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* ===== ADSTERRA SLOT ===== */}
         <div className="ad-container">
           <div id="adsterra-native"></div>
         </div>
       </aside>
 
-      {/* ===== PLAYER ===== */}
       <main className="player-area">
-        {!current && (
-          <div className="placeholder">
-            Select a channel to start watching
-          </div>
-        )}
-
-        {current && (
-          <video
-            ref={videoRef}
-            className="player"
-            controls
-            autoPlay
-            muted
-          />
-        )}
+        {!current && <div className="placeholder">Select a channel</div>}
+        {current && <video ref={videoRef} className="player" controls autoPlay muted />}
       </main>
     </div>
   );

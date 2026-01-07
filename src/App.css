@@ -10,7 +10,7 @@ html, body, #root {
   font-family: Inter, system-ui, sans-serif;
 }
 
-/* ===== MAIN LAYOUT ===== */
+/* ===== LAYOUT ===== */
 .layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -48,12 +48,6 @@ html, body, #root {
   font-size: 13px;
 }
 
-.sidebar input:focus,
-.sidebar select:focus {
-  outline: none;
-  border-color: #444;
-}
-
 /* ===== CHANNEL LIST ===== */
 .channel-list {
   flex: 1;
@@ -72,14 +66,12 @@ html, body, #root {
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   gap: 8px;
   transition: background 0.15s ease, border 0.15s ease;
 }
 
 .channel-btn:hover {
   background: #242424;
-  border-color: #333;
 }
 
 .channel-btn.active {
@@ -87,18 +79,24 @@ html, body, #root {
   border-color: #555;
 }
 
-/* ===== CHANNEL NAME ===== */
+/* ===== CHANNEL NAME (FIXED) ===== */
 .channel-name {
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.2;
-  flex: 1;
+  line-height: 1.3;
+  max-width: 170px;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* ===== BADGES ===== */
 .badges {
   display: flex;
   gap: 4px;
+  align-items: center;
 }
 
 .badge {
@@ -108,13 +106,8 @@ html, body, #root {
   font-weight: 600;
 }
 
-.badge.live {
-  background: #0a7a2f;
-}
-
-.badge.vlc {
-  background: #444;
-}
+.badge.live { background: #0a7a2f; }
+.badge.vlc { background: #444; }
 
 /* ===== PLAYER ===== */
 .player-area {
@@ -128,18 +121,36 @@ html, body, #root {
 .player {
   width: 100%;
   height: 100%;
-  background: black;
 }
 
+/* ===== PLACEHOLDER ===== */
 .placeholder {
   color: #777;
   font-size: 14px;
 }
 
-/* ===== ADSTERRA ===== */
+/* ===== AD ===== */
 .ad-container {
   margin-top: 10px;
   padding: 6px;
   background: #111;
   border-top: 1px solid #222;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #222;
+  }
+
+  .player-area {
+    height: calc(100vh - 280px);
+  }
 }
