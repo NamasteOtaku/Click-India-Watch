@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Hls from "hls.js";
 import channels from "./data/channels.json";
 import "./App.css";
@@ -7,20 +7,21 @@ export default function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
 
-  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const [language, setLanguage] = useState("All");
   const [current, setCurrent] = useState(null);
   const [sourceIndex, setSourceIndex] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const categories = ["All", ...new Set(channels.map(c => c.category))];
-  const languages = ["All", ...new Set(channels.map(c => c.language))];
+  const cleanChannels = channels.filter(
+    c => c && c.name && c.name.trim().length > 1
+  );
 
-  const filtered = channels
-    .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
-    .filter(c => category === "All" || c.category === category)
-    .filter(c => language === "All" || c.language === language);
+  const categories = ["All", ...new Set(cleanChannels.map(c => c.category))];
+
+  const filtered = cleanChannels
+    .filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
+    .filter(c => category === "All" || c.category === category);
 
   useEffect(() => {
     if (!current) return;
@@ -38,84 +39,86 @@ export default function App() {
     hls.attachMedia(videoRef.current);
     hlsRef.current = hls;
 
-    hls.on(Hls.Events.ERROR, () => setSourceIndex(i => i + 1));
+    hls.on(Hls.Events.ERROR, () =>
+      setSourceIndex(i => i + 1)
+    );
   }, [current, sourceIndex]);
 
   return (
     <div className="app">
 
-      <header className="mobile-header">
-        <button className="menu-btn" onClick={() => setSidebarOpen(true)}>☰</button>
-        <span className="brand">ClickNWatch</span>
+      {/* HEADER */}
+      <header className="topbar">
+        <button
+          className="hamburger"
+          onClick={() => setSidebarOpen(true)}
+        >
+          ☰
+        </button>
+        <h1>ClickNWatch</h1>
       </header>
 
       <div className="layout">
 
+        {/* SIDEBAR */}
         <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-          <div className="sidebar-header">
-            <span>Channels</span>
-            <button onClick={() => setSidebarOpen(false)}>✕</button>
-          </div>
+          <button className="close" onClick={() => setSidebarOpen(false)}>×</button>
 
           <input
+            className="search"
             placeholder="Search channels…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
           />
 
-          <select value={category} onChange={e => setCategory(e.target.value)}>
-            {categories.map(c => <option key={c}>{c}</option>)}
-          </select>
-
-          <select value={language} onChange={e => setLanguage(e.target.value)}>
-            {languages.map(l => <option key={l}>{l}</option>)}
+          <select
+            className="select"
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+          >
+            {categories.map(c => (
+              <option key={c}>{c}</option>
+            ))}
           </select>
 
           <div className="channel-list">
-            {filtered.map(ch => {
-              const live = ch.sources.some(s => s.status === "live");
-              const vlc = ch.sources.some(s => s.protocol === "http");
-
-              return (
-                <button
-                  key={ch.name}
-                  className="channel-btn"
-                  onClick={() => {
-                    setCurrent(ch);
-                    setSourceIndex(0);
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <span className="channel-name">{ch.name}</span>
-                  <span className="badges">
-                    {live && <span className="badge live">LIVE</span>}
-                    {vlc && <span className="badge vlc">VLC</span>}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="ad-container">
-            <div id="adsterra-native"></div>
+            {filtered.map(ch => (
+              <button
+                key={ch.name}
+                className={current?.name === ch.name ? "active" : ""}
+                onClick={() => {
+                  setCurrent(ch);
+                  setSourceIndex(0);
+                  setSidebarOpen(false);
+                }}
+              >
+                {ch.name}
+              </button>
+            ))}
           </div>
         </aside>
 
-        <main className="player-area">
-          {!current && <div className="placeholder">Select a channel</div>}
-          {current && (
-            <div className="video-wrapper">
-              <video
-                ref={videoRef}
-                className="player"
-                controls
-                autoPlay
-                playsInline
-              />
-            </div>
-          )}
-        </main>
+        {/* MAIN */}
+        <main className="main">
 
+          {/* PLAYER (FIXED POSITION) */}
+          <div className="player-wrapper">
+            {!current && <div className="placeholder">Select a channel</div>}
+            <video
+              ref={videoRef}
+              controls
+              autoPlay
+              muted
+              className="player"
+            />
+          </div>
+
+          {/* AD PLACEHOLDER (MOBILE SAFE) */}
+          <div className="ad-placeholder">
+            Ad Space
+          </div>
+
+        </main>
       </div>
     </div>
   );
