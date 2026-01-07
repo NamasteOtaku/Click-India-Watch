@@ -3,11 +3,34 @@
 }
 
 html, body, #root {
-  height: 100%;
   margin: 0;
-  background: #0e0e0e;
+  height: 100%;
+  background: #000;
   color: #fff;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: system-ui, sans-serif;
+}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header {
+  display: none;
+  height: 52px;
+  background: #111;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid #222;
+}
+
+.menu-btn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: #fff;
+}
+
+.brand {
+  margin-left: 12px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /* ===== LAYOUT ===== */
@@ -15,142 +38,120 @@ html, body, #root {
   display: grid;
   grid-template-columns: 300px 1fr;
   height: 100vh;
-  overflow: hidden;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
   background: #141414;
-  padding: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
   border-right: 1px solid #222;
 }
 
-.sidebar h2 {
-  margin: 6px 0 12px;
-  font-size: 20px;
-  text-align: center;
+.sidebar-header {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 /* ===== INPUTS ===== */
 .sidebar input,
 .sidebar select {
-  width: 100%;
-  padding: 8px 10px;
   margin-bottom: 8px;
-  border-radius: 6px;
-  border: 1px solid #2a2a2a;
+  padding: 8px;
   background: #1b1b1b;
+  border: 1px solid #333;
   color: #fff;
-  font-size: 13px;
+  border-radius: 6px;
 }
 
 /* ===== CHANNEL LIST ===== */
 .channel-list {
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
 }
 
-/* ===== CHANNEL BUTTON ===== */
 .channel-btn {
   width: 100%;
   background: #1a1a1a;
-  border: 1px solid #242424;
-  padding: 8px 10px;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 10px;
   margin-bottom: 6px;
   border-radius: 6px;
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  transition: background 0.15s ease, border 0.15s ease;
 }
 
-.channel-btn:hover {
-  background: #242424;
-}
-
-.channel-btn.active {
-  background: #2b2b2b;
-  border-color: #555;
-}
-
-/* ===== CHANNEL NAME (FIXED) ===== */
 .channel-name {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
   line-height: 1.3;
-  max-width: 170px;
-  white-space: normal;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  max-width: 70%;
 }
 
 /* ===== BADGES ===== */
-.badges {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
 .badge {
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-weight: 600;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
 }
 
-.badge.live { background: #0a7a2f; }
+.badge.live { background: green; }
 .badge.vlc { background: #444; }
 
 /* ===== PLAYER ===== */
 .player-area {
-  background: #000;
-  height: 100vh;
+  background: black;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.video-wrapper {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  background: black;
+}
+
 .player {
   width: 100%;
   height: 100%;
-}
-
-/* ===== PLACEHOLDER ===== */
-.placeholder {
-  color: #777;
-  font-size: 14px;
-}
-
-/* ===== AD ===== */
-.ad-container {
-  margin-top: 10px;
-  padding: 6px;
-  background: #111;
-  border-top: 1px solid #222;
+  object-fit: contain;
 }
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
+  .mobile-header {
+    display: flex;
+  }
+
   .layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    height: calc(100vh - 52px);
   }
 
   .sidebar {
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #222;
+    position: fixed;
+    top: 52px;
+    left: -100%;
+    width: 85%;
+    height: calc(100vh - 52px);
+    z-index: 10;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar-header {
+    display: flex;
   }
 
   .player-area {
-    height: calc(100vh - 280px);
+    padding: 0;
   }
 }

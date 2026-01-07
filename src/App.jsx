@@ -12,6 +12,7 @@ export default function App() {
   const [language, setLanguage] = useState("All");
   const [current, setCurrent] = useState(null);
   const [sourceIndex, setSourceIndex] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const categories = ["All", ...new Set(channels.map(c => c.category))];
   const languages = ["All", ...new Set(channels.map(c => c.language))];
@@ -41,57 +42,86 @@ export default function App() {
   }, [current, sourceIndex]);
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
-        <h2>ClickNWatch</h2>
+    <div className="app">
 
-        <input
-          placeholder="Search channels…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+      {/* ===== MOBILE HEADER ===== */}
+      <header className="mobile-header">
+        <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
+          ☰
+        </button>
+        <span className="brand">ClickNWatch</span>
+      </header>
 
-        <select value={category} onChange={e => setCategory(e.target.value)}>
-          {categories.map(c => <option key={c}>{c}</option>)}
-        </select>
+      <div className="layout">
 
-        <select value={language} onChange={e => setLanguage(e.target.value)}>
-          {languages.map(l => <option key={l}>{l}</option>)}
-        </select>
+        {/* ===== SIDEBAR ===== */}
+        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <span>Channels</span>
+            <button onClick={() => setSidebarOpen(false)}>✕</button>
+          </div>
 
-        <div className="channel-list">
-          {filtered.map(ch => {
-            const live = ch.sources.some(s => s.status === "live");
-            const vlc = ch.sources.some(s => s.protocol === "http");
+          <input
+            placeholder="Search channels…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
 
-            return (
-              <button
-                key={ch.name}
-                className={`channel-btn ${current?.name === ch.name ? "active" : ""}`}
-                onClick={() => {
-                  setCurrent(ch);
-                  setSourceIndex(0);
-                }}
-              >
-                <span className="channel-name">{ch.name}</span>
-                <span className="badges">
-                  {live && <span className="badge live">LIVE</span>}
-                  {vlc && <span className="badge vlc">VLC</span>}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+          <select value={category} onChange={e => setCategory(e.target.value)}>
+            {categories.map(c => <option key={c}>{c}</option>)}
+          </select>
 
-        <div className="ad-container">
-          <div id="adsterra-native"></div>
-        </div>
-      </aside>
+          <select value={language} onChange={e => setLanguage(e.target.value)}>
+            {languages.map(l => <option key={l}>{l}</option>)}
+          </select>
 
-      <main className="player-area">
-        {!current && <div className="placeholder">Select a channel</div>}
-        {current && <video ref={videoRef} className="player" controls autoPlay muted />}
-      </main>
+          <div className="channel-list">
+            {filtered.map(ch => {
+              const live = ch.sources.some(s => s.status === "live");
+              const vlc = ch.sources.some(s => s.protocol === "http");
+
+              return (
+                <button
+                  key={ch.name}
+                  className="channel-btn"
+                  onClick={() => {
+                    setCurrent(ch);
+                    setSourceIndex(0);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <span className="channel-name">{ch.name}</span>
+                  <span className="badges">
+                    {live && <span className="badge live">LIVE</span>}
+                    {vlc && <span className="badge vlc">VLC</span>}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="ad-container">
+            <div id="adsterra-native"></div>
+          </div>
+        </aside>
+
+        {/* ===== PLAYER ===== */}
+        <main className="player-area">
+          {!current && <div className="placeholder">Select a channel</div>}
+          {current && (
+            <div className="video-wrapper">
+              <video
+                ref={videoRef}
+                className="player"
+                controls
+                autoPlay
+                playsInline
+              />
+            </div>
+          )}
+        </main>
+
+      </div>
     </div>
   );
 }
