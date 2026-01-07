@@ -44,17 +44,13 @@ export default function App() {
   return (
     <div className="app">
 
-      {/* ===== MOBILE HEADER ===== */}
       <header className="mobile-header">
-        <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
-          ☰
-        </button>
+        <button className="menu-btn" onClick={() => setSidebarOpen(true)}>☰</button>
         <span className="brand">ClickNWatch</span>
       </header>
 
       <div className="layout">
 
-        {/* ===== SIDEBAR ===== */}
         <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
           <div className="sidebar-header">
             <span>Channels</span>
@@ -105,7 +101,6 @@ export default function App() {
           </div>
         </aside>
 
-        {/* ===== PLAYER ===== */}
         <main className="player-area">
           {!current && <div className="placeholder">Select a channel</div>}
           {current && (
