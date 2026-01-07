@@ -18,21 +18,64 @@ const IPTV_ORG_IN =
 const LIVETV_COLLECTOR_IN =
   "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/main/LiveTV/India/LiveTV";
 
-/* ================= CATEGORY MAP ================= */
+/* ================= CATEGORY DEFINITIONS ================= */
 
-const CATEGORY_MAP = {
-  "📰 News Channels": ["news","aaj","abp","zee","ndtv","cnn","wion"],
-  "🎬 Movie Channels": ["movie","cinema","b4u","bolly","goldmines"],
-  "🎵 Music Channels": ["music","9x","b4u music","sangeet","yrf"],
-  "📺 General Entertainment Channels": ["sony","colors","sun","star","tv"],
-  "📚 Educational & Devotional Channels": ["bhakti","aastha","god","peace","dd"],
-  "🧒 Kids & Youth": ["kids","cartoon","bal"],
-  "🌍 Travel, Nature & Lifestyle": ["travel","food","wild","earth"],
-  "🎭 Comedy & Drama": ["comedy","drama","bongo"],
-  "🕌 Islamic & Religious": ["islam","quran","madani"],
-  "⚽ Sports Channels": ["sport","fifa","dd sports"],
-  "🏛️ Government & Parliamentary": ["sansad","dd national","dd news"]
-};
+const CATEGORY_RULES = [
+  { cat: "Adult (18+)", keys: ["adult", "xxx", "porn", "18+"] },
+  { cat: "Radio & Audio-only", keys: ["radio", "fm", "music radio"] },
+
+  { cat: "International & English News", keys: [
+    "bbc","cnn","dw","france 24","al jazeera","trt","sky news",
+    "cgtn","cna","global news","iran international"
+  ]},
+
+  { cat: "News", keys: [
+    "news","aaj","abp","zee","ndtv","india today","republic",
+    "news18","tv9","times now","wion","cnbc","et now",
+    "manorama news","mathrubhumi","asianet news","sakshi tv",
+    "ntv","kalinga","odisha tv","dy365","pratidin","goa365"
+  ]},
+
+  { cat: "Sports & Live Sports", keys: [
+    "sport","sports","star sports","sony ten","dd sports",
+    "fifa","t sports","psn","arena sport","euro","espn",
+    "redbull","ptv sports"
+  ]},
+
+  { cat: "Movies & Cinema", keys: [
+    "movie","movies","cinema","goldmines","b4u movies",
+    "zee cinema","sony max","star gold","bollywood",
+    "action","romedy","flix","mnx"
+  ]},
+
+  { cat: "Kids & Cartoon", keys: [
+    "kids","cartoon","nick","disney","cbeebies",
+    "sonic","hungama","shinchan","doraemon","duck tv"
+  ]},
+
+  { cat: "Music", keys: [
+    "music","9x","9xm","b4u music","sangeet",
+    "yrf","zing","mh 1","raj musix","surya music"
+  ]},
+
+  { cat: "Devotional & Spiritual", keys: [
+    "aastha","bhakti","sanskar","satsang","god tv",
+    "peace tv","madani","makkah","quran","azan",
+    "angel tv","shalom","shekinah","svbc","jinvani"
+  ]},
+
+  { cat: "General Entertainment", keys: [
+    "sony","sab","colors","star plus","sun tv","surya",
+    "gemini","udaya","zee tv","&tv","asianet",
+    "kairali","jaya tv","polimer","makal tv"
+  ]},
+
+  { cat: "Infotainment & Knowledge", keys: [
+    "discovery","nat geo","national geographic",
+    "history","travel","travelxp","food","food food",
+    "bbc earth","sony bbc earth","wild","nature"
+  ]}
+];
 
 /* ================= HELPERS ================= */
 
@@ -54,21 +97,21 @@ function saveCache(cache) {
   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
 
-function detectCategory(name = "") {
-  const n = name.toLowerCase();
-  for (const [cat, keys] of Object.entries(CATEGORY_MAP)) {
-    if (keys.some(k => n.includes(k))) return cat;
-  }
-  return "🧩 Others / Miscellaneous";
-}
-
 function normalizeName(name = "") {
   return name
     .toLowerCase()
     .replace(/\(.*?\)/g, "")
-    .replace(/hd|sd|fhd|uhd|\d+p/g, "")
+    .replace(/hd|sd|uhd|fhd|\d+p/g, "")
     .replace(/[^a-z0-9 ]/g, "")
     .trim();
+}
+
+function detectCategory(name = "") {
+  const n = name.toLowerCase();
+  for (const rule of CATEGORY_RULES) {
+    if (rule.keys.some(k => n.includes(k))) return rule.cat;
+  }
+  return "Others";
 }
 
 function parseM3U(content) {
@@ -87,9 +130,9 @@ function parseM3U(content) {
   return out;
 }
 
-function parseLiveTVCollector(jsonText) {
+function parseLiveTVCollector(text) {
   let data;
-  try { data = JSON.parse(jsonText); } catch { return []; }
+  try { data = JSON.parse(text); } catch { return []; }
   if (!Array.isArray(data)) return [];
   return data
     .filter(ch => ch.name && ch.url)
@@ -125,7 +168,7 @@ async function checkHealth(url, cache) {
 /* ================= MAIN ================= */
 
 async function main() {
-  console.log("▶ Fetching IPTV data with multi-source fallback…");
+  console.log("▶ Fetching & normalizing IPTV data (strict rules)…");
 
   ensureDir(OUTPUT_DIR);
   const healthCache = loadCache();
@@ -140,14 +183,14 @@ async function main() {
     ...parseLiveTVCollector(await collectorRes.text())
   ];
 
-  const channelMap = {};
+  const map = {};
 
   for (const ch of merged) {
     const key = normalizeName(ch.name);
     if (!key || !ch.url) continue;
 
-    if (!channelMap[key]) {
-      channelMap[key] = {
+    if (!map[key]) {
+      map[key] = {
         name: ch.name,
         category: detectCategory(ch.name),
         sources: []
@@ -157,7 +200,7 @@ async function main() {
     const health = await checkHealth(ch.url, healthCache);
     healthCache[ch.url] = health;
 
-    channelMap[key].sources.push({
+    map[key].sources.push({
       url: ch.url,
       protocol: ch.url.startsWith("https") ? "https" : "http",
       status: health.status,
@@ -165,11 +208,11 @@ async function main() {
     });
   }
 
-  const finalChannels = Object.values(channelMap).map((ch, i) => ({
+  const finalChannels = Object.values(map).map((c, i) => ({
     id: i + 1,
-    name: ch.name,
-    category: ch.category,
-    sources: ch.sources
+    name: c.name,
+    category: c.category,
+    sources: c.sources
   }));
 
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(finalChannels, null, 2));
