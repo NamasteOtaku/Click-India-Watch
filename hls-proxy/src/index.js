@@ -1,48 +1,44 @@
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    const target = url.searchParams.get("url");
+    const { searchParams } = new URL(request.url);
+    const target = searchParams.get("url");
 
     if (!target || !target.startsWith("http")) {
-      return new Response("Missing or invalid ?url=", { status: 400 });
+      return new Response("Missing ?url=", { status: 400 });
     }
 
-    const upstreamRequest = new Request(target, {
-      method: request.method,
+    const upstream = await fetch(target, {
       headers: {
         "User-Agent": "VLC/3.0.21 LibVLC/3.0.21",
         "Referer": "https://click-india-watch.pages.dev/",
-      },
+        "Accept": "*/*"
+      }
     });
 
-    const response = await fetch(upstreamRequest);
+    let body = await upstream.text();
 
-    // Handle HLS playlists
-    if (target.includes(".m3u8")) {
-      let playlist = await response.text();
-      const proxyBase = `${url.origin}${url.pathname}?url=`;
-
-      playlist = playlist.replace(
-        /(https?:\/\/[^\s"'#]+)/g,
-        (m) => `${proxyBase}${encodeURIComponent(m)}`
+    // Rewrite HLS segment URLs to go through proxy
+    if (body.includes("#EXTM3U")) {
+      const base = new URL(target);
+      body = body.replace(
+        /(?!#)([^"\n\r]+\.ts|[^"\n\r]+\.m3u8)/g,
+        (line) => {
+          if (line.startsWith("http")) {
+            return `${new URL(request.url).origin}/?url=${encodeURIComponent(line)}`;
+          }
+          return `${new URL(request.url).origin}/?url=${encodeURIComponent(
+            new URL(line, base).href
+          )}`;
+        }
       );
-
-      return new Response(playlist, {
-        headers: {
-          "Content-Type": "application/vnd.apple.mpegurl",
-          "Access-Control-Allow-Origin": "*",
-          "Cache-Control": "public, max-age=3600",
-        },
-      });
     }
 
-    // Handle TS segments
-    return new Response(response.body, {
-      status: response.status,
+    return new Response(body, {
       headers: {
-        ...Object.fromEntries(response.headers),
+        "Content-Type": "application/vnd.apple.mpegurl",
         "Access-Control-Allow-Origin": "*",
-      },
+        "Cache-Control": "no-store"
+      }
     });
-  },
+  }
 };
