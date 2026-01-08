@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import channels from "./data/channels.json";
 import "./App.css";
@@ -6,132 +6,87 @@ import "./App.css";
 export default function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
-  const adLoadedRef = useRef(false);
 
+  const [current, setCurrent] = useState(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const [current, setCurrent] = useState(null);
-  const [sourceIndex, setSourceIndex] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [language, setLanguage] = useState("All");
 
-  /* -------- CLEAN CHANNEL DATA -------- */
-  const cleanChannels = channels.filter(
-    c => c && c.name && c.name.trim().length > 1
-  );
+  const categories = ["All", ...new Set(channels.map(c => c.category))];
+  const languages = ["All", ...new Set(channels.map(c => c.language))];
 
-  const categories = ["All", ...new Set(cleanChannels.map(c => c.category))];
-
-  const filtered = cleanChannels
+  const filtered = channels
     .filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
-    .filter(c => category === "All" || c.category === category);
+    .filter(c => category === "All" || c.category === category)
+    .filter(c => language === "All" || c.language === language);
 
-  /* -------- PLAYER LOGIC -------- */
   useEffect(() => {
     if (!current) return;
 
-    const playable = current.sources.filter(
-      s => s.protocol === "https" && s.status === "live"
+    const httpsLive = current.sources.find(
+      s => s.protocol === "https"
     );
 
-    if (!playable[sourceIndex]) return;
+    if (!httpsLive) return;
 
     if (hlsRef.current) hlsRef.current.destroy();
 
     const hls = new Hls();
-    hls.loadSource(playable[sourceIndex].url);
+    hls.loadSource(httpsLive.url);
     hls.attachMedia(videoRef.current);
     hlsRef.current = hls;
 
-    hls.on(Hls.Events.ERROR, () => {
-      setSourceIndex(i => i + 1);
-    });
-  }, [current, sourceIndex]);
-
-  /* -------- ADSTERRA NATIVE AD (SAFE LOAD) -------- */
-  useEffect(() => {
-    if (adLoadedRef.current) return;
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    script.src =
-      "https://pl28421553.effectivegatecpm.com/fb94153b3dce2ffda9a4fa97861e9c0b/invoke.js";
-
-    document.body.appendChild(script);
-    adLoadedRef.current = true;
-  }, []);
+    return () => hls.destroy();
+  }, [current]);
 
   return (
-    <div className="app">
-      {/* TOP BAR */}
-      <header className="topbar">
-        <button className="hamburger" onClick={() => setSidebarOpen(true)}>
-          ☰
-        </button>
-        <h1>ClickNWatch</h1>
-      </header>
+    <div className="layout">
+      <aside className="sidebar">
+        <input
+          placeholder="Search channel"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
 
-      <div className="layout">
-        {/* SIDEBAR */}
-        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-          <button className="close" onClick={() => setSidebarOpen(false)}>
-            ×
-          </button>
+        <select value={category} onChange={e => setCategory(e.target.value)}>
+          {categories.map(c => <option key={c}>{c}</option>)}
+        </select>
 
-          <input
-            className="search"
-            placeholder="Search channels…"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-          />
+        <select value={language} onChange={e => setLanguage(e.target.value)}>
+          {languages.map(l => <option key={l}>{l}</option>)}
+        </select>
 
-          <select
-            className="select"
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-          >
-            {categories.map(c => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
+        <div className="channel-list">
+          {filtered.map(ch => (
+            <button key={ch.name} onClick={() => setCurrent(ch)}>
+              {ch.name}
+            </button>
+          ))}
+        </div>
+      </aside>
 
-          <div className="channel-list">
-            {filtered.map(ch => (
+      <main className="main">
+        <div className="player-wrapper">
+          {!current && <div className="placeholder">Select a channel</div>}
+
+          {current && current.sources.some(s => s.protocol === "https") && (
+            <video ref={videoRef} controls autoPlay muted className="player" />
+          )}
+
+          {current && !current.sources.some(s => s.protocol === "https") && (
+            <div className="placeholder">
+              VLC-only stream<br />
               <button
-                key={ch.name}
-                className={current?.name === ch.name ? "active" : ""}
-                onClick={() => {
-                  setCurrent(ch);
-                  setSourceIndex(0);
-                  setSidebarOpen(false);
-                }}
+                onClick={() =>
+                  navigator.clipboard.writeText(current.sources[0].url)
+                }
               >
-                {ch.name}
+                Copy Stream URL
               </button>
-            ))}
-          </div>
-        </aside>
-
-        {/* MAIN CONTENT */}
-        <main className="main">
-          {/* PLAYER (FIXED SIZE, NO JUMP) */}
-          <div className="player-wrapper">
-            {!current && <div className="placeholder">Select a channel</div>}
-            <video
-              ref={videoRef}
-              controls
-              autoPlay
-              muted
-              className="player"
-            />
-          </div>
-
-          {/* ADSTERRA NATIVE CONTAINER */}
-          <div className="ad-native">
-            <div id="container-fb94153b3dce2ffda9a4fa97861e9c0b"></div>
-          </div>
-        </main>
-      </div>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
