@@ -3,124 +3,170 @@ import Hls from "hls.js";
 import channels from "./data/channels.json";
 import "./App.css";
 
-/* 🔒 DO NOT TOUCH LAYOUT / CSS 🔒 */
-
-/* ✅ YOUR DEPLOYED WORKER URL */
-const PROXY = "https://hls-proxy.intabdipanshu.workers.dev/?url=";
-
 export default function App() {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
 
-  const [current, setCurrent] = useState(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [language, setLanguage] = useState("All");
+  const [current, setCurrent] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const categories = ["All", ...new Set(channels.map(c => c.category))];
   const languages = ["All", ...new Set(channels.map(c => c.language))];
 
-  const filtered = channels
-    .filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
-    .filter(c => category === "All" || c.category === category)
-    .filter(c => language === "All" || c.language === language);
+  const filtered = channels.filter(ch =>
+    ch.name.toLowerCase().includes(query.toLowerCase()) &&
+    (category === "All" || ch.category === category) &&
+    (language === "All" || ch.language === language)
+  );
 
-  useEffect(() => {
-    if (!current || !current.sources || current.sources.length === 0) return;
+useEffect(() => {
+  if (!current || !videoRef.current) return;
 
-    const video = videoRef.current;
-    if (!video) return;
+  const video = videoRef.current;
 
-    /* 🔥 CLEAN UP OLD PLAYER */
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+  // ✅ LIVE-ONLY sources
+  const liveSources = (current.sources || []).filter(
+    s => s.status === "live" && typeof s.url === "string"
+  );
 
-    /* ✅ PICK FIRST PLAYABLE SOURCE */
-    const playable =
-      current.sources.find(s => s.protocol === "https") ||
-      current.sources.find(s => s.protocol === "http");
+  if (liveSources.length === 0) {
+    console.warn("No live sources available for this channel");
+    return;
+  }
 
-    if (!playable) {
-      console.warn("No playable source for", current.name);
+  let index = 0;
+  let hls;
+
+  // Cleanup any previous instance
+  if (hlsRef.current) {
+    hlsRef.current.destroy();
+    hlsRef.current = null;
+  }
+
+  // Reset video safely (DO NOT REMOVE ELEMENT)
+  video.pause();
+  video.removeAttribute("src");
+  video.load();
+
+  const playSource = () => {
+    if (index >= liveSources.length) {
+      console.error("All live sources failed for channel:", current.name);
       return;
     }
 
-    const proxiedUrl = `${PROXY}${encodeURIComponent(playable.url)}`;
+    const source = liveSources[index];
+    const url = source.url;
 
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 90
-      });
+    // SAFETY CHECK (prevents crash)
+    if (typeof url !== "string") {
+      index++;
+      playSource();
+      return;
+    }
 
-      hls.loadSource(proxiedUrl);
+    // ---- HLS (.m3u8) ----
+    if (Hls.isSupported() && url.includes(".m3u8")) {
+      hls = new Hls({ debug: false });
+
+      hls.loadSource(url);
       hls.attachMedia(video);
 
-      hls.on(Hls.Events.ERROR, (_, data) => {
-        console.error("HLS error", data);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(() => {});
+      });
+
+      hls.on(Hls.Events.ERROR, () => {
+        hls.destroy();
+        index++;
+        playSource(); // 🔁 fallback (same channel)
       });
 
       hlsRef.current = hls;
-    } else {
-      video.src = proxiedUrl;
+    } 
+    // ---- NON-HLS (mp4 / others) ----
+    else {
+      video.src = url;
+      video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+      };
+      video.onerror = () => {
+        index++;
+        playSource(); // 🔁 fallback
+      };
     }
-  }, [current]);
+  };
+
+  playSource();
+
+  // Cleanup on channel change / unmount
+  return () => {
+    if (hls) {
+      hls.destroy();
+    }
+  };
+}, [current]);
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
-        <h2>ClickNWatch</h2>
+    <div className="app">
 
+      {/* HEADER */}
+      <header className="header">
+        <h1 className="logo">ClickNWatch</h1>
         <input
+          className="search"
           placeholder="Search channels…"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
+      </header>
 
+      {/* PLAYER + ADS ROW */}
+      <section className="player-row">
+        <div className="ad-side">Ad Space</div>
+
+        <div className="player-wrap">
+          <video
+            ref={videoRef}
+            className="player"
+            controls
+            muted
+            autoPlay
+          />
+          {loading && <div className="loading">Loading…</div>}
+        </div>
+
+        <div className="ad-side">Ad Space</div>
+      </section>
+
+      {/* FILTERS */}
+      <section className="filters">
         <select value={category} onChange={e => setCategory(e.target.value)}>
-          {categories.map(c => (
-            <option key={c}>{c}</option>
-          ))}
+          {categories.map(c => <option key={c}>{c}</option>)}
         </select>
 
         <select value={language} onChange={e => setLanguage(e.target.value)}>
-          {languages.map(l => (
-            <option key={l}>{l}</option>
-          ))}
+          {languages.map(l => <option key={l}>{l}</option>)}
         </select>
+      </section>
 
-        <div className="channel-list">
+      {/* CHANNEL LIST (SCROLL ONLY HERE) */}
+      <section className="channels-scroll">
+        <div className="channels">
           {filtered.map(ch => (
             <button
               key={ch.name}
+              className="channel"
               onClick={() => setCurrent(ch)}
             >
               {ch.name}
             </button>
           ))}
         </div>
-      </aside>
+      </section>
 
-      <main className="player-area">
-        <div className="player-wrapper">
-          {!current && (
-            <div className="placeholder">Select a channel</div>
-          )}
-          <video
-            ref={videoRef}
-            className="player"
-            controls
-            autoPlay
-            muted
-          />
-        </div>
-      </main>
     </div>
   );
 }
