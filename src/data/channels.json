@@ -5020,12 +5020,6 @@
         "source": "iptv-org"
       },
       {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1703/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
         "url": "https://vidcdn.vidgyor.com/news24-origin/liveabr/playlist.m3u8",
         "protocol": "https",
         "status": "unknown",
@@ -12704,19 +12698,6 @@
     ]
   },
   {
-    "name": "Gazi TV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/gazibdz.stream/tracks-v1a1/mono.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
     "name": "ATN Bangla UK",
     "category": "Others",
     "language": "Bangla",
@@ -12791,12 +12772,6 @@
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
-      },
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/chsukoff.stream/tracks-v1a1/mono.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
       }
     ]
   },
@@ -12807,19 +12782,6 @@
     "sources": [
       {
         "url": "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/playlist.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Channel S HD",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/channels.stream/tracks-v1a1/mono.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -12840,25 +12802,12 @@
     ]
   },
   {
-    "name": "Ekhone TV",
-    "category": "Others",
+    "name": "ATN Music",
+    "category": "Music",
     "language": "Other",
     "sources": [
       {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/globaltv.stream/tracks-v1a1/mono.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Jago News 24",
-    "category": "News",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/jagonews24.stream/tracks-v1a1/mono.m3u8",
+        "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/atnmusic.stream/playlist.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -12872,19 +12821,6 @@
     "sources": [
       {
         "url": "https://raw.githubusercontent.com/gift4bd/ytm/main/RTVMusic.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Music Bangla",
-    "category": "Music",
-    "language": "Bangla",
-    "sources": [
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/musicbangla2025.stream/tracks-v1a1/mono.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -12991,6 +12927,18 @@
         "protocol": "http",
         "status": "vlc",
         "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://sbc-prod-dub-enc.edgenextcdn.net/out/v1/b09bbb8d9b684763be4211b088168de7/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "http://m.live.net.sa:1935/live/sunnah/playlist.m3u8",
+        "protocol": "http",
+        "status": "vlc",
+        "source": "LiveTVCollector"
       }
     ]
   },
@@ -13014,45 +12962,6 @@
     "sources": [
       {
         "url": "https://aasthaott.akamaized.net/110923/smil:arihant.smil/chunklist_b1928000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Islam bangla",
-    "category": "Others",
-    "language": "Bangla",
-    "sources": [
-      {
-        "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDDEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFsaWRtaW51aiPhnPTI2/islamchbangla.stream/tracks-v1a1/mono.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "AL SUNNAH AL NABAWIYAH TV",
-    "category": "Others",
-    "language": "Tamil",
-    "sources": [
-      {
-        "url": "https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Makka live",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://cdn-globecast.akamaized.net/live/eds/saudi_sunnah/hls_roku/index.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -13417,6 +13326,19 @@
     ]
   },
   {
+    "name": "Discovery UK",
+    "category": "Infotainment & Knowledge",
+    "language": "English",
+    "sources": [
+      {
+        "url": "http://fl1.moveonjoy.com/Discovery_Channel/index.m3u8",
+        "protocol": "http",
+        "status": "vlc",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
     "name": "Animal Planet HD",
     "category": "Others",
     "language": "Other",
@@ -13644,6 +13566,19 @@
         "url": "https://amg01076-lightningintern-actionhollywood-samsungnz-82rry.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8",
         "protocol": "https",
         "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "Utsav Gold",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "http://45.148.145.57/IN_STU/index.m3u8",
+        "protocol": "http",
+        "status": "vlc",
         "source": "LiveTVCollector"
       }
     ]
@@ -14012,19 +13947,6 @@
     ]
   },
   {
-    "name": "Al Jazeera",
-    "category": "News",
-    "language": "Hindi",
-    "sources": [
-      {
-        "url": "http://103.60.204.26:3255/Aljazeera/tracks-v1a1/mono.m3u8",
-        "protocol": "http",
-        "status": "vlc",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
     "name": "TRT 1",
     "category": "Others",
     "language": "Other",
@@ -14239,6 +14161,18 @@
     "sources": [
       {
         "url": "http://163.61.227.29:8000/play/a01i/index.m3u8",
+        "protocol": "http",
+        "status": "vlc",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://svs.itworkscdn.net/asharqdiscoverylive/asharqd.smil/playlist_dvr.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "http://stvlive.net:8080/discovery/index.m3u8",
         "protocol": "http",
         "status": "vlc",
         "source": "LiveTVCollector"
@@ -14463,12 +14397,6 @@
         "source": "LiveTVCollector"
       },
       {
-        "url": "https://d3ssd0juqbxbw.cloudfront.net/mtvsinstlive/master.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
         "url": "http://cors.tundracast.com:2000/http://103.60.204.26:3255/SonytenSports1HD/index.m3u8",
         "protocol": "http",
         "status": "vlc",
@@ -14574,6 +14502,19 @@
     ]
   },
   {
+    "name": "France 24",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/fr24.stream/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
     "name": "RT Now",
     "category": "Others",
     "language": "Other",
@@ -14613,153 +14554,25 @@
     ]
   },
   {
-    "name": "BTV",
+    "name": "AL SUNNAH AL NABAWIYAH TV",
+    "category": "Others",
+    "language": "Tamil",
+    "sources": [
+      {
+        "url": "https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "Makka live",
     "category": "Others",
     "language": "Other",
     "sources": [
       {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1709/output/master.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1709/output/1709-audio_113392_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Jamuna",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/1701-audio_113312_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Somoy",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "71 TV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "INDEPENDENT",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1704/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "ATN NEWS",
-    "category": "News",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1706/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "ATN BANGLA",
-    "category": "Others",
-    "language": "Bangla",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1722/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1722/output/1722-audio_113522_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Channel I",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      },
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/1723-audio_113532_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "BanglaVision",
-    "category": "Others",
-    "language": "Bangla",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "N TV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1716/output/index.m3u8",
+        "url": "https://cdn-globecast.akamaized.net/live/eds/saudi_sunnah/hls_roku/index.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -14814,19 +14627,6 @@
         "url": "http://143.244.60.30/Nat_Geo_Wild/index.m3u8",
         "protocol": "http",
         "status": "vlc",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "ALJAZEERA",
-    "category": "Others",
-    "language": "Hindi",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1721/output/index.m3u8",
-        "protocol": "https",
-        "status": "unknown",
         "source": "LiveTVCollector"
       }
     ]
@@ -14910,6 +14710,19 @@
     ]
   },
   {
+    "name": "BPL 2026 🚨 🎯 📡 T Sports  🚨",
+    "category": "Sports & Live Sports",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://stream.snexus.co/live/SN_WILDLIFE/main_stream.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
     "name": "🚨 ATN AFG 🚨",
     "category": "Others",
     "language": "Other",
@@ -14955,6 +14768,45 @@
     "sources": [
       {
         "url": "https://mvg-mv-xumo.otteravision.com/mvg/mv/mv.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "BIS HABER",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/tecotv2025/tecotv/refs/heads/main/playlist/Bein_Spor_Haber.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "A SPOR",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/aspor/aspor_480p.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "TRT SPOR",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://trn03.tulix.tv/gt-trt-spor1/playlist.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -15183,97 +15035,6 @@
     ]
   },
   {
-    "name": "Ekattor HD 71 🇧🇩",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Channel 24 🇧🇩",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1703/output/1703-audio_113332_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Somoy TV 🇧🇩",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Independent TV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1704/output/1704-audio_113342_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Bangla Vision TV",
-    "category": "Others",
-    "language": "Bangla",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "NTV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1716/output/1716-audio_113462_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Dipto TV",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1711/output/1711-audio_113412_eng=113200-video=1692000.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
     "name": "24/7 Shinchan",
     "category": "Kids & Cartoon",
     "language": "Other",
@@ -15352,6 +15113,128 @@
     ]
   },
   {
+    "name": "QURAN",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "http://m.live.net.sa:1935/live/quran/playlist.m3u8",
+        "protocol": "http",
+        "status": "vlc",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "BAHRAIN QURAN",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahrainquran_all/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "QURAN RADIOTV SMC",
+    "category": "Radio & Audio-only",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://live.kwikmotion.com/smcquranlive/quranradiolive/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "AL QAMAR",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://streamer3.premio.link/alqamar/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "ALMASIRA MUBASHER",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://svs.itworkscdn.net/almasiramubacherlive/almasira.smil/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://live2.cdnbridge.tv/AlmasirahMubasher/Mubasher_All/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "AL EKHBARIA",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://al-ekhbaria-prod-dub.shahid.net/out/v1/d443f3203b444032896e3233cb6eaa84/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://cdn-globecast.akamaized.net/live/eds/al_ekhbariya/hls_roku/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-ekhbaria/297b3ef1cd0633ad9cfba7473a686a06/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "QURAN KAREEM TV",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://al-ekhbaria-prod-dub.shahid.net/out/v1/9885cab0a3ec4008b53bae57a27ca76b/index.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "AL ISTIQAMA",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://jmc-live.ercdn.net/alistiqama/alistiqama.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
     "name": "Destination America",
     "category": "Others",
     "language": "Other",
@@ -15423,6 +15306,51 @@
     "sources": [
       {
         "url": "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg00684-accuweather-accuweather-plex/playlist.m3u8?v=1",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "FASHION ONE",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://b01c02nl.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e2ee6997cb_1/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      },
+      {
+        "url": "https://b01c02nl.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/broadcast_5c9e2ee690051.smil/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "Sooriyan TV (1080p)",
+    "category": "Others",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://live20.bozztv.com/giatv/giatv-Infinittyott/Infinittyott/playlist.m3u8",
+        "protocol": "https",
+        "status": "unknown",
+        "source": "LiveTVCollector"
+      }
+    ]
+  },
+  {
+    "name": "France News 24",
+    "category": "News",
+    "language": "Other",
+    "sources": [
+      {
+        "url": "https://live.france24.com/hls/live/2037179/F24_FR_HI_HLS/master_5000.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
@@ -15748,19 +15676,6 @@
     "sources": [
       {
         "url": "https://mediaserver.abnvideos.com/streams/abntvindia.m3u8",
-        "protocol": "https",
-        "status": "unknown",
-        "source": "LiveTVCollector"
-      }
-    ]
-  },
-  {
-    "name": "Sooriyan TV (1080p)",
-    "category": "Others",
-    "language": "Other",
-    "sources": [
-      {
-        "url": "https://live20.bozztv.com/giatv/giatv-Infinittyott/Infinittyott/playlist.m3u8",
         "protocol": "https",
         "status": "unknown",
         "source": "LiveTVCollector"
