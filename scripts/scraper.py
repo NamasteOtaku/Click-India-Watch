@@ -2,7 +2,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from scripts.utils import (
+script_dir = Path(__file__).parent
+project_root = script_dir.parent
+sys.path.insert(0, str(project_root))
+
+from utils import (
     get_project_root,
     load_sources,
     fetch_playlist,
@@ -62,7 +66,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-if __name__ == '__main__':
-    create_snapshot()
