@@ -157,6 +157,7 @@ def main():
         json.dump(updated_channels, f, indent=2, ensure_ascii=False)
     
     print(f"Updated {channels_file}")
+    print(f"Browser restricted: {stats['browser_restricted']} / {stats['total']}")
     sys.exit(0)
 
 
