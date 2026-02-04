@@ -1,37 +1,67 @@
-"""Simple scraper to gather channels and save an initial status snapshot.
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
-This is intentionally lightweight — adapt to your needs and APIs.
-"""
-import json
-import requests
-from scripts.utils import load_json, save_json, read_lines, today_filename
+from scripts.utils import (
+    get_project_root,
+    load_sources,
+    fetch_playlist,
+    parse_playlist,
+    normalize_channel,
+    deduplicate_channels,
+    save_channels_json,
+)
 
 
-def gather_channels():
-    # For initial implementation, read channels.json
-    ch = load_json('data/channels.json') or []
-    return ch
+def main():
+    root = get_project_root()
+    sources = load_sources()
+    
+    if not sources:
+        print("Error: No sources found in data/sources.txt")
+        sys.exit(1)
+    
+    now = datetime.now(timezone.utc).isoformat()
+    all_channels = []
+    success_count = 0
+    
+    print(f"Scraping {len(sources)} source(s)...")
+    
+    for source_url in sources:
+        print(f"  Fetching {source_url}...", end='', flush=True)
+        content = fetch_playlist(source_url)
+        
+        if content is None:
+            print(" FAILED")
+            continue
+        
+        print(" OK")
+        
+        channels = parse_playlist(content, source_url)
+        print(f"    Parsed {len(channels)} channels")
+        
+        for ch in channels:
+            normalized = normalize_channel(ch, now, now)
+            all_channels.append(normalized)
+        
+        success_count += 1
+    
+    if success_count == 0:
+        print("Error: All sources failed")
+        sys.exit(1)
+    
+    print(f"\nTotal channels before dedup: {len(all_channels)}")
+    all_channels = deduplicate_channels(all_channels)
+    print(f"Total channels after dedup: {len(all_channels)}")
+    
+    output_file = root / "data" / "channels.json"
+    save_channels_json(all_channels, str(output_file))
+    print(f"Saved to {output_file}")
+    sys.exit(0)
 
 
-def create_snapshot():
-    channels = gather_channels()
-    snapshot = {
-        'date': __import__('datetime').date.today().isoformat(),
-        'channels': []
-    }
-
-    for c in channels:
-        snapshot['channels'].append({
-            'id': c.get('id'),
-            'name': c.get('name'),
-            'url': c.get('url'),
-            'meta': c.get('meta', {}),
-            'online': False,
-            'checked': None
-        })
-
-    save_json(snapshot, today_filename())
-    print('Snapshot saved to', today_filename())
+if __name__ == '__main__':
+    main()
 
 
 if __name__ == '__main__':
