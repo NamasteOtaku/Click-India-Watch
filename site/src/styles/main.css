@@ -1,0 +1,7 @@
+:root{--accent:#0066cc}
+body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;color:#111}
+.app{max-width:900px;margin:0 auto;padding:1rem}
+.channel-card{border:1px solid #eee;padding:0.75rem;border-radius:6px;margin:0.5rem 0}
+.channel-card.online{border-color:var(--accent);background:#f0fbff}
+.status{font-weight:600;color:#666}
+.search input{width:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4px}

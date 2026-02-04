@@ -1,0 +1,13 @@
+{
+  "name": "click-india-watch-site",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "scripts": {
+    "start": "serve -s public -l 3000",
+    "build": "echo 'Static site — build step not implemented'"
+  }
+}

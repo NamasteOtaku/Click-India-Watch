@@ -1,15 +1,19 @@
-# Click India Watch — Edge IPTV Platform
+# Click India Watch ✅
 
-## Deploy Worker
-1. Install Wrangler
-2. Create worker
-3. Set env:
-   CHANNELS_URL=https://click-india-watch.pages.dev/channels.json
-4. Publish
+Lightweight project to scrape and monitor public livestream channels and expose a simple site to browse current and past statuses.
 
-## Deploy Frontend
-Push frontend folder to GitHub
-Cloudflare Pages auto-deploys
+## Structure
 
-## Test
-/api/stream?channel=DD%20News
+- `scripts/` — Python scrapers and helpers
+- `data/` — sources, channel list, and daily status dumps
+- `site/` — minimal React frontend
+- `assets/` — logos and static assets
+- `docs/` — architecture and takedown policy
+
+## Quick start
+
+1. Install Python dependencies: `pip install -r scripts/requirements.txt`
+2. Run a daily check locally: `python3 scripts/check_streams.py`
+3. Start the frontend: `cd site && npm install && npm start`
+
+License: MIT — see `LICENSE` for details.

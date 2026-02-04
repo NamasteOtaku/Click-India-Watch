@@ -1,0 +1,14 @@
+[
+  {
+    "id": "chan-1",
+    "name": "Example Channel 1",
+    "url": "https://www.youtube.com/channel/EXAMPLE1",
+    "meta": { "platform": "youtube" }
+  },
+  {
+    "id": "chan-2",
+    "name": "Example Channel 2",
+    "url": "https://www.youtube.com/channel/EXAMPLE2",
+    "meta": { "platform": "youtube" }
+  }
+]

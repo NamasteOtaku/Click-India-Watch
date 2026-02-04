@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Data and logs
+data/status/
+logs/
+
+# Node
+node_modules/
+site/node_modules/
+
+# OS
+.DS_Store
+
+# Misc
+*.log
