@@ -1,3 +1,4 @@
+# scripts/utils.py
 import hashlib
 import json
 import re
@@ -31,7 +32,17 @@ def fetch_playlist(url: str, max_retries: int = 3, timeout: int = 15) -> Optiona
         try:
             response = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
             response.raise_for_status()
-            return response.text
+            
+            content_type = response.headers.get('Content-Type', '').lower()
+            if not any(x in content_type for x in ['mpegurl', 'm3u', 'text']):
+                print(f"Warning: Unexpected Content-Type for {url}: {content_type}")
+            
+            text = response.text
+            if '#EXTM3U' not in text[:2048]:
+                print(f"Rejected non-M3U source: {url}")
+                return None
+            
+            return text
         except Exception:
             if attempt < max_retries - 1:
                 continue
@@ -146,3 +157,63 @@ def save_channels_json(channels: List[Dict], output_file: str):
     sorted_channels = sorted(channels, key=lambda x: x['name'].lower())
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(sorted_channels, f, indent=2, ensure_ascii=False)
+
+
+def load_json(path: str) -> Optional[List[Dict]]:
+    path_obj = Path(path)
+    if not path_obj.exists():
+        return None
+    with open(path_obj, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def save_json(obj: List[Dict], path: str):
+    path_obj = Path(path)
+    path_obj.parent.mkdir(parents=True, exist_ok=True)
+    with open(path_obj, 'w', encoding='utf-8') as f:
+        json.dump(obj, f, indent=2, ensure_ascii=False)
+
+
+def get_daily_status_file() -> Path:
+    from datetime import date
+    status_dir = get_project_root() / "data" / "status"
+    status_dir.mkdir(parents=True, exist_ok=True)
+    return status_dir / f"{date.today().isoformat()}.json"
+
+
+def classify_stream(http_code: int, resp_time_ms: float, content_type: str, head_success: bool, get_success: bool) -> str:
+    if http_code >= 400 or not head_success:
+        return "dead"
+    
+    if head_success and not get_success:
+        return "unstable"
+    
+    if not content_type or not any(x in content_type.lower() for x in ['mpeg', 'video', 'm3u', 'stream', 'octet']):
+        if get_success:
+            return "unstable"
+        return "dead"
+    
+    if resp_time_ms >= 3000:
+        return "slow"
+    
+    return "live"
+
+
+def update_health_score(channel: Dict, status: str) -> Dict:
+    score = channel.get('health_score', 1.0)
+    
+    if status == 'live':
+        score = min(score + 0.01, 1.0)
+    elif status == 'slow':
+        score = min(score + 0.005, 1.0)
+    elif status == 'unstable':
+        score = max(score - 0.02, 0.0)
+    elif status == 'dead':
+        score = max(score - 0.05, 0.0)
+    
+    channel['health_score'] = score
+    
+    if status in ['live', 'slow']:
+        channel['last_seen'] = datetime.now(timezone.utc).isoformat()
+    
+    return channel
