@@ -11,6 +11,8 @@ export default function SearchBar({
   languages,
   selectedStatus,
   onStatusChange,
+  hideRestrictedStreams,
+  onHideRestrictedChange,
 }) {
   return (
     <div className="filter-bar">
@@ -70,6 +72,19 @@ export default function SearchBar({
             <option value="Unstable">Unstable</option>
             <option value="Dead">Dead</option>
           </select>
+        </div>
+
+        <div className="filter-group browser-toggle-group">
+          <label htmlFor="hide-restricted">
+            <input
+              id="hide-restricted"
+              type="checkbox"
+              checked={hideRestrictedStreams}
+              onChange={(e) => onHideRestrictedChange(e.target.checked)}
+              className="browser-toggle-input"
+            />
+            Hide app-only
+          </label>
         </div>
       </div>
     </div>

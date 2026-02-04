@@ -16,6 +16,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedLanguage, setSelectedLanguage] = useState('All')
   const [selectedStatus, setSelectedStatus] = useState('All')
+  const [hideRestrictedStreams, setHideRestrictedStreams] = useState(true)
   const [showFavOnly, setShowFavOnly] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -24,6 +25,10 @@ export default function App() {
     const saved = localStorage.getItem('favorites')
     if (saved) {
       setFavorites(new Set(JSON.parse(saved)))
+    }
+    const hideRestricted = localStorage.getItem('hideRestrictedStreams')
+    if (hideRestricted !== null) {
+      setHideRestrictedStreams(JSON.parse(hideRestricted))
     }
   }, [])
 
@@ -37,7 +42,7 @@ export default function App() {
 
   useEffect(() => {
     filterChannels()
-  }, [channels, searchQuery, selectedCategory, selectedLanguage, selectedStatus, showFavOnly, favorites])
+  }, [channels, searchQuery, selectedCategory, selectedLanguage, selectedStatus, showFavOnly, hideRestrictedStreams, favorites])
 
   useEffect(() => {
     if (ADS_ENABLED) {
@@ -125,6 +130,10 @@ export default function App() {
       result = result.filter(ch => getChannelStatus(ch) === selectedStatus)
     }
 
+    if (hideRestrictedStreams) {
+      result = result.filter(ch => ch.browser_playable !== false)
+    }
+
     if (showFavOnly) {
       result = result.filter(ch => favorites.has(ch.id))
     }
@@ -181,6 +190,11 @@ export default function App() {
         languages={getLanguages()}
         selectedStatus={selectedStatus}
         onStatusChange={setSelectedStatus}
+        hideRestrictedStreams={hideRestrictedStreams}
+        onHideRestrictedChange={(val) => {
+          setHideRestrictedStreams(val)
+          localStorage.setItem('hideRestrictedStreams', JSON.stringify(val))
+        }}
       />
 
       {error && <div className="error">{error}</div>}

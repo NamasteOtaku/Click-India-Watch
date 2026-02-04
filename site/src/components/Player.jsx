@@ -24,6 +24,12 @@ export default function Player({ channel, onClose }) {
           </button>
         </div>
 
+        {channel.browser_playable === false && (
+          <div className="player-warning">
+            ⚠️ This stream may not play in browsers. Try an IPTV app.
+          </div>
+        )}
+
         <div className="player-container">
           <video
             ref={videoRef}

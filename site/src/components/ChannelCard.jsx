@@ -42,6 +42,11 @@ export default function ChannelCard({
         >
           {isFavorite ? '❤' : '🤍'}
         </button>
+        {channel.browser_playable === false && (
+          <div className="browser-warning-badge" title="Works in IPTV apps. Blocked in browsers.">
+            ⚠️
+          </div>
+        )}
       </div>
 
       <div className="card-body">
