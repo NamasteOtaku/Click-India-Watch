@@ -34,6 +34,13 @@ jobs:
       - name: Run checker
         run: python scripts/check_streams.py
 
+      - name: Copy latest status
+        run: |
+          LATEST=$(ls -t data/status/*.json 2>/dev/null | head -1)
+          if [ -n "$LATEST" ]; then
+            cp "$LATEST" data/status/latest.json
+          fi
+
       - name: Commit results
         run: |
           git config user.name "github-actions[bot]"

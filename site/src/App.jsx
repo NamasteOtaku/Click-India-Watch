@@ -1,4 +1,3 @@
-// site/src/App.jsx
 import React, { useState, useEffect } from 'react'
 import ChannelCard from './components/ChannelCard.jsx'
 import SearchBar from './components/SearchBar.jsx'
@@ -45,25 +44,17 @@ export default function App() {
       if (!chRes.ok) throw new Error('Failed to fetch channels')
       const chData = await chRes.json()
 
-      const apiRes = await fetch(
-        `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/data/status`
-      )
-      if (!apiRes.ok) throw new Error('Failed to fetch status directory')
-      const apiData = await apiRes.json()
-
-      const statusFiles = apiData
-        .filter(f => f.name.match(/^\d{4}-\d{2}-\d{2}\.json$/))
-        .sort()
-        .reverse()
-
       let statusData = {}
-      if (statusFiles.length > 0) {
-        const latest = statusFiles[0]
-        const statusRes = await fetch(latest.download_url)
+      try {
+        const statusRes = await fetch(
+          `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/data/status/latest.json`
+        )
         if (statusRes.ok) {
           const statuses = await statusRes.json()
           statusData = Object.fromEntries(statuses.map(s => [s.id, s]))
         }
+      } catch (err) {
+        console.warn('Could not fetch status:', err.message)
       }
 
       const merged = chData.map(ch => ({
