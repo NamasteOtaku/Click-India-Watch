@@ -2,27 +2,27 @@ import React from 'react'
 
 export default function SearchBar({
   searchQuery,
-  onSearchChange,
+  setSearchQuery,
   selectedCategory,
-  onCategoryChange,
+  setSelectedCategory,
   categories,
   selectedLanguage,
-  onLanguageChange,
+  setSelectedLanguage,
   languages,
   selectedStatus,
-  onStatusChange,
+  setSelectedStatus,
   hideRestricted,
   setHideRestricted,
 }) {
   return (
-    <div className="filter-bar">
+    <div className="control-bar">
       <div className="filter-row">
         <div className="filter-group search-group">
           <input
             type="search"
             placeholder="Search channels..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="filter-input search-input"
           />
         </div>
@@ -32,7 +32,7 @@ export default function SearchBar({
           <select
             id="category-select"
             value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             className="filter-select"
           >
             {categories.map(cat => (
@@ -48,7 +48,7 @@ export default function SearchBar({
           <select
             id="language-select"
             value={selectedLanguage}
-            onChange={(e) => onLanguageChange(e.target.value)}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
             className="filter-select"
           >
             {languages.map(lang => (
@@ -64,7 +64,7 @@ export default function SearchBar({
           <select
             id="status-select"
             value={selectedStatus}
-            onChange={(e) => onStatusChange(e.target.value)}
+            onChange={(e) => setSelectedStatus(e.target.value)}
             className="filter-select"
           >
             <option value="All">All</option>
