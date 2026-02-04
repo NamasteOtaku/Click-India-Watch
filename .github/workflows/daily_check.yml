@@ -22,9 +22,14 @@ jobs:
 
       - name: Debug workspace
         run: |
+          echo "PWD:"
           pwd
+          echo "Root listing:"
           ls -la
+          echo "Scripts listing:"
           ls -la scripts
+          echo "Requirements file:"
+          cat scripts/requirements.txt || echo "NOT FOUND"
 
       - name: Install dependencies
         run: |
