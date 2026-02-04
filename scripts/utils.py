@@ -125,17 +125,85 @@ def generate_id(stream_url: str) -> str:
     return hashlib.sha256(stream_url.encode('utf-8')).hexdigest()[:16]
 
 
+def detect_language(name: str, group: str) -> str:
+    """Detect language from channel name and group using keyword rules."""
+    text = f"{name} {group}".lower()
+    
+    hindi_kw = ['zee', 'star', 'dd', 'bharat', 'aaj', 'india', 'news18']
+    english_kw = ['tv', 'news', 'times', 'global', 'international']
+    tamil_kw = ['sun', 'kalaignar', 'polimer', 'thanthi']
+    telugu_kw = ['etv', 'gemini', 'sakshi']
+    malayalam_kw = ['asianet', 'manorama', 'kairali']
+    bengali_kw = ['bangla', 'zee bangla']
+    punjabi_kw = ['ptc', 'chardikla']
+    marathi_kw = ['abp maza', 'zee marathi']
+    urdu_kw = ['hum', 'ary']
+    
+    if any(kw in text for kw in hindi_kw):
+        return 'Hindi'
+    if any(kw in text for kw in english_kw):
+        return 'English'
+    if any(kw in text for kw in tamil_kw):
+        return 'Tamil'
+    if any(kw in text for kw in telugu_kw):
+        return 'Telugu'
+    if any(kw in text for kw in malayalam_kw):
+        return 'Malayalam'
+    if any(kw in text for kw in bengali_kw):
+        return 'Bengali'
+    if any(kw in text for kw in punjabi_kw):
+        return 'Punjabi'
+    if any(kw in text for kw in marathi_kw):
+        return 'Marathi'
+    if any(kw in text for kw in urdu_kw):
+        return 'Urdu'
+    
+    return 'Unknown'
+
+
+def normalize_category(name: str, group: str) -> str:
+    """Normalize category from group or name."""
+    text = f"{name} {group}".lower()
+    
+    news_kw = ['news', 'samachar', 'tv9', 'ndtv']
+    sports_kw = ['sports', 'cricket', 'ten sports']
+    kids_kw = ['kids', 'cartoon', 'shinchan', 'pogo']
+    movies_kw = ['movies', 'cinema', 'film']
+    religious_kw = ['bhajan', 'aastha', 'sanskar', 'islam', 'quran']
+    music_kw = ['music', 'mtv', '9xm']
+    
+    if any(kw in text for kw in news_kw):
+        return 'News'
+    if any(kw in text for kw in sports_kw):
+        return 'Sports'
+    if any(kw in text for kw in kids_kw):
+        return 'Kids'
+    if any(kw in text for kw in movies_kw):
+        return 'Movies'
+    if any(kw in text for kw in religious_kw):
+        return 'Religious'
+    if any(kw in text for kw in music_kw):
+        return 'Music'
+    
+    return 'Entertainment'
+
+
 def normalize_channel(channel: Dict, first_seen: str, last_seen: str) -> Dict:
+    name = channel['name']
+    group = channel['group'] or ''
+    
     return {
         'id': generate_id(channel['stream_url']),
-        'name': channel['name'],
-        'language': 'unknown',
+        'name': name,
+        'language': detect_language(name, group),
         'country': 'India',
         'logo': channel['logo'] if channel['logo'] else None,
-        'group': channel['group'],
+        'group': group,
+        'category': normalize_category(name, group),
         'source_file': channel['source_file'],
         'stream_url': channel['stream_url'],
         'tags': [],
+        'browser_playable': True,
         'first_seen': first_seen,
         'last_seen': last_seen,
         'health_score': 1.0
