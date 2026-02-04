@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ChannelCard from './components/ChannelCard.jsx'
-import SearchBar from './components/SearchBar.jsx'
+import FilterBar from './components/FilterBar.jsx'
 import Player from './components/Player.jsx'
 
 const GITHUB_USER = 'NamasteOtaku'
@@ -170,7 +170,7 @@ export default function App() {
 
       {ADS_ENABLED && <div id="ad-top-banner" className="ad-slot"></div>}
 
-      <SearchBar
+      <FilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         selectedCategory={selectedCategory}
