@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import ChannelCard from './components/ChannelCard.jsx'
-import SearchBar from './components/SearchBar.jsx'
+import FilterBar from './components/FilterBar.jsx'
 import Player from './components/Player.jsx'
 
 const GITHUB_USER = 'NamasteOtaku'
 const GITHUB_REPO = 'Click-India-Watch'
+const ADS_ENABLED = true
 
 export default function App() {
   const [channels, setChannels] = useState([])
   const [filteredChannels, setFilteredChannels] = useState([])
   const [selectedChannel, setSelectedChannel] = useState(null)
   const [favorites, setFavorites] = useState(new Set())
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [selectedLanguage, setSelectedLanguage] = useState('All')
+  const [selectedStatus, setSelectedStatus] = useState('All')
   const [showFavOnly, setShowFavOnly] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -33,7 +37,13 @@ export default function App() {
 
   useEffect(() => {
     filterChannels()
-  }, [channels, searchTerm, showFavOnly, favorites])
+  }, [channels, searchQuery, selectedCategory, selectedLanguage, selectedStatus, showFavOnly, favorites])
+
+  useEffect(() => {
+    if (ADS_ENABLED) {
+      // Adsterra script will be injected here later
+    }
+  }, [])
 
   const fetchChannels = async () => {
     try {
@@ -74,16 +84,45 @@ export default function App() {
     }
   }
 
+  const getChannelStatus = (channel) => {
+    const score = channel.health_score || 1.0
+    if (score >= 0.7) return 'Stable'
+    if (score >= 0.3) return 'Unstable'
+    return 'Dead'
+  }
+
+  const getCategories = () => {
+    const cats = new Set(channels.map(ch => ch.group).filter(Boolean))
+    return ['All', ...Array.from(cats).sort()]
+  }
+
+  const getLanguages = () => {
+    const langs = new Set(channels.map(ch => ch.language).filter(Boolean))
+    return ['All', ...Array.from(langs).sort()]
+  }
+
   const filterChannels = () => {
     let result = channels
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase()
+    if (searchQuery) {
+      const term = searchQuery.toLowerCase()
       result = result.filter(
         ch =>
           ch.name.toLowerCase().includes(term) ||
           (ch.group && ch.group.toLowerCase().includes(term))
       )
+    }
+
+    if (selectedCategory !== 'All') {
+      result = result.filter(ch => ch.group === selectedCategory)
+    }
+
+    if (selectedLanguage !== 'All') {
+      result = result.filter(ch => ch.language === selectedLanguage)
+    }
+
+    if (selectedStatus !== 'All') {
+      result = result.filter(ch => getChannelStatus(ch) === selectedStatus)
     }
 
     if (showFavOnly) {
@@ -129,9 +168,20 @@ export default function App() {
         </div>
       </header>
 
-      <div id="ad-top-banner" className="ad-slot"></div>
+      {ADS_ENABLED && <div id="ad-top-banner" className="ad-slot"></div>}
 
-      <SearchBar value={searchTerm} onChange={setSearchTerm} />
+      <FilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        categories={getCategories()}
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={setSelectedLanguage}
+        languages={getLanguages()}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+      />
 
       {error && <div className="error">{error}</div>}
 
@@ -161,13 +211,15 @@ export default function App() {
         </>
       )}
 
-      <div id="ad-inline-player" className="ad-slot"></div>
+      {ADS_ENABLED && <div id="ad-inline-player" className="ad-slot"></div>}
 
       {selectedChannel && (
         <Player channel={selectedChannel} onClose={handleClose} />
       )}
 
-      <div id="ad-mobile-sticky" className="ad-slot"></div>
+      {ADS_ENABLED && (
+        <div id="ad-mobile-sticky" className="ad-slot ad-sticky"></div>
+      )}
     </div>
   )
 }
