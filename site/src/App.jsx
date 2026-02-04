@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ChannelCard from './components/ChannelCard.jsx'
-import FilterBar from './components/FilterBar.jsx'
+import SearchBar from './components/SearchBar.jsx'
 import Player from './components/Player.jsx'
 
 const GITHUB_USER = 'NamasteOtaku'
@@ -179,19 +179,19 @@ export default function App() {
 
       {ADS_ENABLED && <div id="ad-top-banner" className="ad-slot"></div>}
 
-      <FilterBar
+      <SearchBar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        setSearchQuery={setSearchQuery}
         selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
+        setSelectedCategory={setSelectedCategory}
         categories={getCategories()}
         selectedLanguage={selectedLanguage}
-        onLanguageChange={setSelectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
         languages={getLanguages()}
         selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        hideRestrictedStreams={hideRestrictedStreams}
-        onHideRestrictedChange={(val) => {
+        setSelectedStatus={setSelectedStatus}
+        hideRestricted={hideRestrictedStreams}
+        setHideRestricted={(val) => {
           setHideRestrictedStreams(val)
           localStorage.setItem('hideRestrictedStreams', JSON.stringify(val))
         }}
