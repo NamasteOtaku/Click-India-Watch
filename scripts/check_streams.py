@@ -18,6 +18,7 @@ from utils import (
     save_json,
     get_daily_status_file,
     classify_stream,
+    is_browser_playable,
     update_health_score,
 )
 
@@ -56,6 +57,7 @@ async def check_stream(session: aiohttp.ClientSession, channel: Dict) -> Dict:
     resp_time_ms = (time.time() - start_time) * 1000
     
     status = classify_stream(http_code, resp_time_ms, content_type, head_success, get_success)
+    browser_playable = is_browser_playable(url, http_code, status, content_type)
     
     result = {
         'id': channel.get('id'),
@@ -65,6 +67,7 @@ async def check_stream(session: aiohttp.ClientSession, channel: Dict) -> Dict:
         'http_code': http_code if http_code else None,
         'content_type': content_type if content_type else None,
         'resp_time_ms': round(resp_time_ms, 2),
+        'browser_playable': browser_playable,
         'checked_at': datetime.now(timezone.utc).isoformat()
     }
     
@@ -92,6 +95,7 @@ async def check_streams_concurrent(channels: list, max_workers: int = 20) -> lis
                         'http_code': None,
                         'content_type': None,
                         'resp_time_ms': None,
+                        'browser_playable': False,
                         'checked_at': datetime.now(timezone.utc).isoformat(),
                         'error': str(e)
                     }
@@ -129,7 +133,8 @@ def main():
         'live': sum(1 for r in results if r['status'] == 'live'),
         'slow': sum(1 for r in results if r['status'] == 'slow'),
         'dead': sum(1 for r in results if r['status'] == 'dead'),
-        'unstable': sum(1 for r in results if r['status'] == 'unstable')
+        'unstable': sum(1 for r in results if r['status'] == 'unstable'),
+        'browser_restricted': sum(1 for r in results if not r.get('browser_playable', True))
     }
     
     print(f"\nSummary:")
@@ -138,12 +143,14 @@ def main():
     print(f"  Slow: {stats['slow']}")
     print(f"  Dead: {stats['dead']}")
     print(f"  Unstable: {stats['unstable']}")
+    print(f"  Browser restricted: {stats['browser_restricted']}")
     
     channels_by_id = {ch['id']: ch for ch in channels}
     for result in results:
         ch = channels_by_id.get(result['id'])
         if ch:
             update_health_score(ch, result['status'])
+            ch['browser_playable'] = result.get('browser_playable', True)
     
     updated_channels = sorted(channels, key=lambda x: x['name'].lower())
     with open(channels_file, 'w', encoding='utf-8') as f:

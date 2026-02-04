@@ -267,6 +267,23 @@ def classify_stream(http_code: int, resp_time_ms: float, content_type: str, head
     return "live"
 
 
+def is_browser_playable(stream_url: str, http_code: int, status: str, content_type: str) -> bool:
+    """Determine if stream is browser playable based on multiple factors."""
+    if stream_url.startswith('http://'):
+        return False
+    
+    if http_code == 403:
+        return False
+    
+    if status == 'dead':
+        return False
+    
+    if not content_type or content_type.strip() == '':
+        return False
+    
+    return True
+
+
 def update_health_score(channel: Dict, status: str) -> Dict:
     score = channel.get('health_score', 1.0)
     
